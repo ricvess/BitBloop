@@ -1,657 +1,482 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pilih Game Sayang Kita!</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MiniGames Kita ❤️</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div class="container">
-        <h1>Selamat Datang di Dunia Game Kita! ❤️</h1>
-        <p>Pilih game yang ingin kamu mainkan bersama aku:</p>
-        <div class="game-list">
-            <a href="hidden-object.html" class="game-card">
-                <h2>Cari Benda Tersembunyi</h2>
-                <p>Temukan benda-benda kenangan kita di foto spesial!</p>
-            </a>
-            <a href="memory-match.html" class="game-card">
-                <h2>Memory Match Kita</h2>
-                <p>Uji ingatanmu dengan foto-foto manis kita!</p>
-            </a>
-            </div>
+  <!-- Sidebar -->
+  <div id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <h2>❤️ Akun Kamu</h2>
+      <button id="close-sidebar" class="close-button">×</button>
     </div>
+    <div class="sidebar-content">
+      <p><strong>Nama:</strong> <span id="sidebar-name">Guest User</span></p>
+      <p><strong>Points:</strong> <span id="sidebar-points">0</span></p>
+      <hr>
+      <button class="sidebar-link" onclick="goHome()">🏠 Home</button>
+      <button class="sidebar-link" onclick="showProfile()">👤 Profile</button>
+      <button class="sidebar-link" onclick="resetAccount()">🚪 Logout</button>
+    </div>
+  </div>
+  <button id="menu-button" class="menu-button">≡</button>
+
+  <!-- Home Menu -->
+  <div id="main-container">
+    <div class="container">
+      <h1>Selamat Datang di Dunia Game Kita! ❤️</h1>
+      <p>Pilih game yang ingin kamu mainkan bersama aku:</p>
+      <div class="game-list">
+        <div class="game-card" onclick="startGame('memory')">
+          <h2>Memory Match Kita</h2>
+          <p>Uji ingatanmu dengan foto-foto manis kita!</p>
+        </div>
+        <div class="game-card" onclick="startGame('hidden')">
+          <h2>Cari Benda Tersembunyi</h2>
+          <p>Temukan benda-benda kenangan kita di foto spesial!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Area -->
+  <div id="game-area" class="hidden">
+    <div id="memory-game" class="hidden">
+      <div class="game-container">
+        <h1>Uji Ingatanmu dengan Foto Kita! ❤️</h1>
+        <p id="status-message">Klik kartu untuk memulai!</p>
+        <div id="game-board" class="game-board"></div>
+        <button id="reset-button" class="action-button">Main Lagi</button>
+        <button class="back-button" onclick="goHome()">Kembali ke Menu</button>
+      </div>
+    </div>
+
+    <div id="hidden-game" class="hidden">
+      <div class="game-container">
+        <h1>Temukan Benda Kenangan Kita! ✨</h1>
+        <p>Klik benda-benda yang tersembunyi di foto ini. Ada <span id="total-objects">0</span> benda yang harus kamu temukan!</p>
+        <div class="image-area">
+          <img id="background-image" src="assets/photo_background.jpg" alt="Foto Kenangan">
+          <div class="hidden-object" id="obj1" style="top:30%; left:40%;"></div>
+          <div class="hidden-object" id="obj2" style="top:60%; left:20%;"></div>
+          <div class="hidden-object" id="obj3" style="top:50%; left:70%;"></div>
+        </div>
+        <p>Benda ditemukan: <span id="found-count">0</span> / <span id="total-objects">0</span></p>
+        <div id="message" class="message"></div>
+        <button class="back-button" onclick="goHome()">Kembali ke Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Area -->
+  <div id="profile-area" class="hidden">
+    <h2>👤 Profile Kamu</h2>
+    <div class="profile-box">
+      <label for="name-input">Nama Kamu ❤️</label>
+      <input type="text" id="name-input" placeholder="Nama kamu...">
+      <button id="save-name" class="action-button">Simpan Nama</button>
+      <p><strong>Total Points:</strong> <span id="profile-points">0</span></p>
+    </div>
+    <button class="back-button" onclick="goHome()">Kembali ke Menu</button>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
+/* Global Styles */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    background: linear-gradient(135deg, #FFC0CB 0%, #FFDAB9 100%); /* Pink-Peach Gradient */
-    color: #333;
-    text-align: center;
-    overflow-x: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  background: linear-gradient(135deg, #FFC0CB 0%, #FFDAB9 100%);
+  color: #333;
+  overflow-x: hidden;
 }
 
-.container {
-    background-color: rgba(255, 255, 255, 0.95);
-    padding: 40px 50px;
-    border-radius: 20px;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-    max-width: 800px;
-    width: 90%;
-    animation: fadeIn 1.5s ease-out;
-    border: 3px solid #FF69B4; /* Deep Pink Border */
+.hidden { display: none; }
+
+.container, .game-container {
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 30px 40px;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  max-width: 800px;
+  width: 90%;
+  margin: 30px auto;
+  text-align: center;
+  animation: fadeIn 1s ease-out;
 }
 
 h1 {
-    color: #FF1493; /* Deep Pink */
-    font-size: 3em;
-    margin-bottom: 20px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  color: #FF1493;
+  font-size: 2.5em;
+  margin-bottom: 20px;
 }
 
 p {
-    font-size: 1.3em;
-    line-height: 1.6;
-    margin-bottom: 30px;
-    color: #555;
+  font-size: 1.2em;
+  margin-bottom: 20px;
 }
 
+/* Home Game List */
 .game-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 30px;
-    margin-top: 40px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
 }
 
 .game-card {
-    background-color: #fff;
-    border: 2px solid #FF69B4;
-    border-radius: 15px;
-    padding: 25px;
-    width: 280px;
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-    text-decoration: none;
-    color: #333;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: #fff;
+  border: 2px solid #FF69B4;
+  border-radius: 15px;
+  padding: 25px;
+  width: 260px;
+  box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+  text-decoration: none;
+  color: #333;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .game-card:hover {
-    transform: translateY(-10px) scale(1.03);
-    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
-    background-color: #FFF0F5; /* Lavender Blush */
+  transform: translateY(-10px) scale(1.03);
+  box-shadow: 0 15px 25px rgba(0,0,0,0.2);
+  background-color: #FFF0F5;
 }
 
-.game-card h2 {
-    color: #FF1493;
-    font-size: 1.8em;
-    margin-bottom: 10px;
+/* Buttons */
+.action-button, .back-button, .sidebar-link {
+  background-color: #FF69B4;
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1em;
+  margin: 10px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.game-card p {
-    font-size: 1em;
-    color: #777;
-    margin-bottom: 0;
+.action-button:hover, .back-button:hover, .sidebar-link:hover {
+  background-color: #FF1493;
+  transform: translateY(-3px);
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
+/* Sidebar Styles */
+.menu-button {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background-color: #FF69B4;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 18px;
+  font-size: 1.5em;
+  cursor: pointer;
+  z-index: 999;
 }
 
-@media (max-width: 768px) {
-    h1 {
-        font-size: 2.2em;
-    }
-    p {
-        font-size: 1.1em;
-    }
-    .container {
-        padding: 30px;
-    }
-    .game-card {
-        width: 100%; /* Full width on small screens */
-    }
-}
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cari Benda Tersembunyi!</title>
-    <link rel="stylesheet" href="hidden-object.css">
-</head>
-<body>
-    <div class="game-container">
-        <h1>Temukan Benda Kenangan Kita! ✨</h1>
-        <p>Klik benda-benda yang tersembunyi di foto ini. Ada <span id="total-objects">0</span> benda yang harus kamu temukan!</p>
-        
-        <div class="image-area" id="image-area">
-            <img src="assets/background-photo.jpg" alt="Foto Kenangan" id="background-image">
-            
-            <div class="hidden-object" id="obj1" style="left: 20%; top: 30%;"></div>
-            <div class="hidden-object" id="obj2" style="left: 70%; top: 50%;"></div>
-            <div class="hidden-object" id="obj3" style="left: 45%; top: 80%;"></div>
-            </div>
-
-        <p class="found-count">Benda ditemukan: <span id="found-count">0</span> / <span id="total-found">0</span></p>
-        <div id="message" class="message"></div>
-        <button onclick="location.href='index.html'" class="back-button">Kembali ke Menu</button>
-    </div>
-
-    <script src="hidden-object.js"></script>
-</body>
-</html>
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    background: linear-gradient(135deg, #F0F8FF 0%, #E6E6FA 100%); /* AliceBlue to Lavender */
-    color: #333;
-    text-align: center;
-    overflow-x: hidden;
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 260px;
+  height: 100%;
+  background-color: #fff;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+  padding: 20px;
+  border-right: 3px solid #FF69B4;
+  transition: left 0.4s ease;
+  z-index: 998;
 }
 
-.game-container {
-    background-color: rgba(255, 255, 255, 0.95);
-    padding: 30px 40px;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    max-width: 900px;
-    width: 90%;
-    border: 2px solid #6A5ACD; /* Slate Blue */
-    animation: slideIn 1s ease-out;
+.sidebar.open {
+  left: 0;
 }
 
-h1 {
-    color: #483D8B; /* Dark Slate Blue */
-    font-size: 2.5em;
-    margin-bottom: 15px;
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-p {
-    font-size: 1.1em;
-    margin-bottom: 25px;
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.8em;
+  cursor: pointer;
+  color: #FF69B4;
 }
 
-.image-area {
-    position: relative;
-    width: 100%;
-    max-width: 800px; /* Lebar maksimum area gambar */
-    margin: 0 auto 30px;
-    border: 3px solid #8A2BE2; /* Blue Violet */
-    border-radius: 10px;
-    overflow: hidden; /* Penting untuk objek di dalam */
+.sidebar-content {
+  margin-top: 20px;
 }
 
-.image-area img {
-    width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 8px;
+.sidebar-content p {
+  margin: 10px 0;
+  font-size: 1.1em;
+  color: #333;
 }
 
-.hidden-object {
-    position: absolute;
-    width: 50px; /* Ukuran area klik objek tersembunyi */
-    height: 50px;
-    /* background-color: rgba(255, 0, 0, 0.3); */ /* Untuk debugging, bisa dihapus/dijadikan komentar */
-    cursor: pointer;
-    border-radius: 50%;
-    transition: transform 0.2s ease;
-}
-
-.hidden-object.found {
-    background-color: rgba(0, 255, 0, 0.3); /* Warna saat ditemukan */
-    border: 2px solid green;
-    pointer-events: none; /* Tidak bisa diklik lagi */
-    transform: scale(1.2); /* Efek saat ditemukan */
-    opacity: 0; /* Membuat objek menghilang saat ditemukan */
-    transition: opacity 0.5s ease-out, transform 0.2s ease;
-}
-
-.message {
-    margin-top: 20px;
-    font-size: 1.2em;
-    font-weight: bold;
-    color: #2E8B57; /* Sea Green */
-    min-height: 1.5em; /* Mencegah layout bergeser */
-}
-
-.found-count {
-    font-size: 1.2em;
-    font-weight: bold;
-    color: #483D8B;
-}
-
-.back-button {
-    background-color: #8A2BE2; /* Blue Violet */
-    color: white;
-    padding: 12px 25px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1.1em;
-    margin-top: 30px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.back-button:hover {
-    background-color: #6A5ACD;
-    transform: translateY(-3px);
-}
-
-@keyframes slideIn {
-    from { opacity: 0; transform: translateY(-50px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Responsif */
-@media (max-width: 768px) {
-    h1 {
-        font-size: 1.8em;
-    }
-    .game-container {
-        padding: 20px;
-    }
-    .hidden-object {
-        width: 40px;
-        height: 40px;
-    }
-}
+/* Profile Page */
+#profile-area {
+  max-width: 500px;
+  margin: 30px auto;
+  padding: 20px 30px;
+  background-color: #fff0f5;
+  border: 2px solid #FF69B4;
+  bord
 document.addEventListener('DOMContentLoaded', () => {
-    const hiddenObjects = document.querySelectorAll('.hidden-object');
-    const foundCountSpan = document.getElementById('found-count');
-    const totalObjectsSpan = document.getElementById('total-objects');
-    const messageDisplay = document.getElementById('message');
-    const backgroundImage = document.getElementById('background-image');
+  /* Sidebar Toggle */
+  const sidebar = document.getElementById('sidebar');
+  const menuButton = document.getElementById('menu-button');
+  const closeSidebar = document.getElementById('close-sidebar');
+  const sidebarName = document.getElementById('sidebar-name');
+  const sidebarPoints = document.getElementById('sidebar-points');
+  const profilePoints = document.getElementById('profile-points');
+  const nameInput = document.getElementById('name-input');
 
+  menuButton.addEventListener('click', () => sidebar.classList.add('open'));
+  closeSidebar.addEventListener('click', () => sidebar.classList.remove('open'));
+
+  /* Storage */
+  let userName = localStorage.getItem('userName') || 'Guest User';
+  let userPoints = parseInt(localStorage.getItem('userPoints') || '0');
+  updateAccountUI();
+
+  document.getElementById('save-name').addEventListener('click', () => {
+    userName = nameInput.value.trim() || 'Guest User';
+    localStorage.setItem('userName', userName);
+    updateAccountUI();
+    goHome();
+  });
+
+  function updateAccountUI() {
+    sidebarName.textContent = userName;
+    sidebarPoints.textContent = userPoints;
+    profilePoints.textContent = userPoints;
+    nameInput.value = userName;
+  }
+
+  function addPoints(points) {
+    userPoints += points;
+    localStorage.setItem('userPoints', userPoints);
+    updateAccountUI();
+  }
+
+  function resetAccount() {
+    if (confirm('Yakin mau logout? Nama & poin akan direset.')) {
+      userName = 'Guest User';
+      userPoints = 0;
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userPoints');
+      updateAccountUI();
+      goHome();
+    }
+  }
+
+  /* Navigation */
+  const mainContainer = document.getElementById('main-container');
+  const gameArea = document.getElementById('game-area');
+  const memoryGame = document.getElementById('memory-game');
+  const hiddenGame = document.getElementById('hidden-game');
+  const profileArea = document.getElementById('profile-area');
+
+  window.goHome = () => {
+    mainContainer.classList.remove('hidden');
+    gameArea.classList.add('hidden');
+    memoryGame.classList.add('hidden');
+    hiddenGame.classList.add('hidden');
+    profileArea.classList.add('hidden');
+    sidebar.classList.remove('open');
+  };
+
+  window.showProfile = () => {
+    mainContainer.classList.add('hidden');
+    gameArea.classList.add('hidden');
+    memoryGame.classList.add('hidden');
+    hiddenGame.classList.add('hidden');
+    profileArea.classList.remove('hidden');
+    sidebar.classList.remove('open');
+  };
+
+  window.resetAccount = resetAccount;
+
+  window.startGame = (type) => {
+    mainContainer.classList.add('hidden');
+    gameArea.classList.remove('hidden');
+    if (type === 'memory') {
+      memoryGame.classList.remove('hidden');
+      hiddenGame.classList.add('hidden');
+      createMemoryBoard();
+    } else if (type === 'hidden') {
+      hiddenGame.classList.remove('hidden');
+      memoryGame.classList.add('hidden');
+      initHiddenObjects();
+    }
+    sidebar.classList.remove('open');
+  };
+
+  /* Memory Game */
+  const gameBoard = document.getElementById('game-board');
+  const resetButton = document.getElementById('reset-button');
+  const statusMessage = document.getElementById('status-message');
+
+  const cardImages = [
+    'assets/photo1.jpg', 'assets/photo2.jpg', 'assets/photo3.jpg', 'assets/photo4.jpg',
+    'assets/photo1.jpg', 'assets/photo2.jpg', 'assets/photo3.jpg', 'assets/photo4.jpg'
+  ];
+
+  let cards = [], flippedCards = [], matchedPairs = 0, lockBoard = false;
+
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  function createMemoryBoard() {
+    gameBoard.innerHTML = '';
+    cards = [];
+    flippedCards = [];
+    matchedPairs = 0;
+    lockBoard = false;
+    statusMessage.textContent = 'Klik kartu untuk memulai!';
+    const shuffledImages = shuffle([...cardImages]);
+    shuffledImages.forEach((imagePath, index) => {
+      const card = document.createElement('div');
+      card.classList.add('card');
+      card.dataset.image = imagePath;
+      card.dataset.id = index;
+
+      const cardInner = document.createElement('div');
+      cardInner.classList.add('card-inner');
+
+      const cardFront = document.createElement('div');
+      cardFront.classList.add('card-front');
+      const img = document.createElement('img');
+      img.src = imagePath;
+      cardFront.appendChild(img);
+
+      const cardBack = document.createElement('div');
+      cardBack.classList.add('card-back');
+
+      cardInner.appendChild(cardFront);
+      cardInner.appendChild(cardBack);
+      card.appendChild(cardInner);
+
+      card.addEventListener('click', flipCard);
+      gameBoard.appendChild(card);
+      cards.push(card);
+    });
+  }
+
+  function flipCard() {
+    if (lockBoard || this === flippedCards[0]) return;
+    this.classList.add('flipped');
+    flippedCards.push(this);
+    if (flippedCards.length === 2) {
+      lockBoard = true;
+      checkForMatch();
+    }
+  }
+
+  function checkForMatch() {
+    const [card1, card2] = flippedCards;
+    const isMatch = card1.dataset.image === card2.dataset.image;
+    if (isMatch) {
+      statusMessage.textContent = 'Yeay! Cocok! ❤️';
+      matchedPairs++;
+      disableCards();
+    } else {
+      statusMessage.textContent = 'Aduh, belum cocok. Coba lagi! 🥺';
+      unflipCards();
+    }
+    if (matchedPairs === cardImages.length / 2) {
+      statusMessage.textContent = 'Selamat! Kamu menemukan semua pasangan! Hebat! 🎉';
+      addPoints(10);
+    }
+  }
+
+  function disableCards() {
+    flippedCards[0].classList.add('matched');
+    flippedCards[1].classList.add('matched');
+    resetBoard();
+  }
+
+  function unflipCards() {
+    setTimeout(() => {
+      flippedCards[0].classList.remove('flipped');
+      flippedCards[1].classList.remove('flipped');
+      resetBoard();
+    }, 1000);
+  }
+
+  function resetBoard() {
+    [flippedCards, lockBoard] = [[], false];
+  }
+
+  resetButton.addEventListener('click', createMemoryBoard);
+
+  /* Hidden Object Game */
+  const hiddenObjects = document.querySelectorAll('.hidden-object');
+  const foundCountSpan = document.getElementById('found-count');
+  const totalObjectsSpan = document.getElementById('total-objects');
+  const messageDisplay = document.getElementById('message');
+  const backgroundImage = document.getElementById('background-image');
+
+  function initHiddenObjects() {
     let foundObjects = 0;
+    hiddenObjects.forEach(obj => obj.classList.remove('found'));
     const totalObjects = hiddenObjects.length;
-
-    totalObjectsSpan.textContent = totalObjects; // Menampilkan total objek yang harus ditemukan
+    totalObjectsSpan.textContent = totalObjects;
     foundCountSpan.textContent = foundObjects;
 
-    // Fungsi untuk menskalakan posisi objek berdasarkan ukuran gambar latar belakang
-    function scaleObjectsPosition() {
-        const imageWidth = backgroundImage.offsetWidth;
-        const imageHeight = backgroundImage.offsetHeight;
-
-        hiddenObjects.forEach(obj => {
-            // Asumsi posisi awal sudah dalam persentase di CSS
-            // Jika kamu menggunakan pixel, ini perlu dihitung ulang
-            // const originalLeft = parseFloat(obj.style.left);
-            // const originalTop = parseFloat(obj.style.top);
-            // obj.style.left = `${(originalLeft / 800) * imageWidth}px`; // Contoh jika maks width 800px
-            // obj.style.top = `${(originalTop / 600) * imageHeight}px`; // Contoh jika maks height 600px
-        });
-    }
-
-    // Panggil saat gambar termuat dan saat window di-resize
-    backgroundImage.onload = scaleObjectsPosition;
-    window.addEventListener('resize', scaleObjectsPosition);
-
-
     hiddenObjects.forEach(obj => {
-        obj.addEventListener('click', () => {
-            if (!obj.classList.contains('found')) {
-                obj.classList.add('found');
-                foundObjects++;
-                foundCountSpan.textContent = foundObjects;
-                
-                // Tambahkan pesan personal untuk setiap objek
-                let personalMessage = "Kamu menemukanku!";
-                switch(obj.id) {
-                    case 'obj1':
-                        personalMessage = "Yay! Itu foto kencan pertama kita, inget gak? 😊";
-                        break;
-                    case 'obj2':
-                        personalMessage = "Hore! Itu hadiah kecil yang pernah aku kasih. 🥰";
-                        break;
-                    case 'obj3':
-                        personalMessage = "Yeay! Ini tiket konser favorit kita! ✨";
-                        break;
-                    // Tambahkan case lain untuk setiap objek dengan ID unik
-                }
-                showMessage(personalMessage);
-
-                if (foundObjects === totalObjects) {
-                    setTimeout(() => {
-                        showMessage("Selamat! Kamu menemukan semua benda kenangan kita! Kamu memang yang terbaik! ❤️");
-                    }, 1000);
-                }
-            }
-        });
+      obj.addEventListener('click', () => {
+        if (!obj.classList.contains('found')) {
+          obj.classList.add('found');
+          foundObjects++;
+          foundCountSpan.textContent = foundObjects;
+          let personalMessage = "Kamu menemukanku!";
+          switch(obj.id) {
+            case 'obj1': personalMessage = "Yay! Itu foto kencan pertama kita ❤️"; break;
+            case 'obj2': personalMessage = "Hore! Hadiah yang aku kasih dulu 🥰"; break;
+            case 'obj3': personalMessage = "Yeay! Tiket konser favorit kita ✨"; break;
+          }
+          showMessage(personalMessage);
+          if (foundObjects === totalObjects) {
+            setTimeout(() => {
+              showMessage("Selamat! Kamu menemukan semua benda kenangan kita! ❤️");
+              addPoints(10);
+            }, 1000);
+          }
+        }
+      });
     });
+  }
 
-    function showMessage(msg) {
-        messageDisplay.textContent = msg;
-        messageDisplay.style.opacity = 0;
-        messageDisplay.style.transform = 'translateY(10px)';
-        setTimeout(() => {
-            messageDisplay.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-            messageDisplay.style.opacity = 1;
-            messageDisplay.style.transform = 'translateY(0)';
-        }, 50); // Delay kecil untuk animasi
-        
-        // Sembunyikan pesan setelah beberapa detik
-        setTimeout(() => {
-            messageDisplay.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-            messageDisplay.style.opacity = 0;
-            messageDisplay.style.transform = 'translateY(-10px)';
-        }, 3000); // Pesan hilang setelah 3 detik
-    }
-});
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory Match Kita!</title>
-    <link rel="stylesheet" href="memory-match.css">
-</head>
-<body>
-    <div class="game-container">
-        <h1>Uji Ingatanmu dengan Foto Kita! ❤️</h1>
-        <p>Temukan semua pasangan foto yang sama.</p>
-        
-        <div class="game-board" id="game-board">
-            </div>
+  function showMessage(msg) {
+    messageDisplay.textContent = msg;
+    messageDisplay.style.opacity = 0;
+    messageDisplay.style.transform = 'translateY(10px)';
+    setTimeout(() => {
+      messageDisplay.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      messageDisplay.style.opacity = 1;
+      messageDisplay.style.transform = 'translateY(0)';
+    }, 50);
+    setTimeout(() => {
+      messageDisplay.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      messageDisplay.style.opacity = 0;
+      messageDisplay.style.transform = 'translateY(-10px)';
+    }, 3000);
+  }
 
-        <p class="status-message" id="status-message">Klik kartu untuk memulai!</p>
-        <button id="reset-button" class="action-button">Main Lagi</button>
-        <button onclick="location.href='index.html'" class="back-button">Kembali ke Menu</button>
-    </div>
-
-    <script src="memory-match.js"></script>
-</body>
-</html>
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    background: linear-gradient(135deg, #E0FFFF 0%, #ADD8E6 100%); /* Light Cyan to Light Blue */
-    color: #333;
-    text-align: center;
-    overflow-x: hidden;
-}
-
-.game-container {
-    background-color: rgba(255, 255, 255, 0.95);
-    padding: 30px 40px;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    max-width: 800px;
-    width: 90%;
-    border: 2px solid #4682B4; /* Steel Blue */
-    animation: slideIn 1s ease-out;
-}
-
-h1 {
-    color: #191970; /* Midnight Blue */
-    font-size: 2.5em;
-    margin-bottom: 15px;
-}
-
-p {
-    font-size: 1.1em;
-    margin-bottom: 25px;
-}
-
-.game-board {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4 kolom */
-    gap: 15px;
-    margin: 0 auto 30px;
-    max-width: 600px; /* Batasi lebar board */
-}
-
-.card {
-    width: 120px; /* Lebar kartu */
-    height: 120px; /* Tinggi kartu */
-    background-color: #A9A9A9; /* Warna belakang kartu default */
-    border: 3px solid #4682B4;
-    border-radius: 10px;
-    cursor: pointer;
-    perspective: 1000px; /* Untuk efek flip 3D */
-    transition: transform 0.3s ease-out;
-    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-}
-
-.card-inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    text-align: center;
-    transition: transform 0.6s;
-    transform-style: preserve-3d;
-}
-
-.card.flipped .card-inner {
-    transform: rotateY(180deg);
-}
-
-.card-front, .card-back {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    -webkit-backface-visibility: hidden; /* Safari */
-    backface-visibility: hidden;
-    border-radius: 8px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-size: cover;
-    background-position: center;
-}
-
-.card-back {
-    background-color: #ADD8E6; /* Light Blue */
-    background-image: url('assets/card_back.png'); /* Gambar belakang kartu */
-    background-size: 70%; /* Ukuran ikon di belakang kartu */
-    background-repeat: no-repeat;
-    background-position: center;
-    z-index: 2;
-}
-
-.card-front {
-    transform: rotateY(180deg);
-    border: 2px solid #4682B4;
-}
-
-.card-front img {
-    max-width: 100%;
-    max-height: 100%;
-    border-radius: 8px;
-    object-fit: cover; /* Memastikan gambar mengisi kartu tanpa distorsi */
-}
-
-.card.matched {
-    opacity: 0.6; /* Sedikit transparan saat matched */
-    pointer-events: none; /* Tidak bisa diklik lagi */
-    transform: scale(0.95);
-    box-shadow: none;
-}
-
-.status-message {
-    font-size: 1.2em;
-    font-weight: bold;
-    color: #4682B4;
-    min-height: 1.5em; /* Mencegah layout bergeser */
-    margin-bottom: 20px;
-}
-
-.action-button, .back-button {
-    background-color: #4682B4; /* Steel Blue */
-    color: white;
-    padding: 12px 25px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1.1em;
-    margin: 10px 10px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.action-button:hover, .back-button:hover {
-    background-color: #366792; /* Darker Steel Blue */
-    transform: translateY(-3px);
-}
-
-@keyframes slideIn {
-    from { opacity: 0; transform: translateY(-50px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Responsif */
-@media (max-width: 768px) {
-    h1 {
-        font-size: 1.8em;
-    }
-    .game-container {
-        padding: 20px;
-    }
-    .game-board {
-        grid-template-columns: repeat(3, 1fr); /* 3 kolom untuk layar kecil */
-        gap: 10px;
-    }
-    .card {
-        width: 90px;
-        height: 90px;
-    }
-}
-document.addEventListener('DOMContentLoaded', () => {
-    const gameBoard = document.getElementById('game-board');
-    const resetButton = document.getElementById('reset-button');
-    const statusMessage = document.getElementById('status-message');
-
-    // Array path gambar untuk kartu (ganti dengan path FOTO KAMU di folder assets!)
-    // Pastikan jumlah gambar genap dan ada 2 dari setiap gambar untuk pasangan
-    const cardImages = [
-        'assets/photo1.jpg',
-        'assets/photo2.jpg',
-        'assets/photo3.jpg',
-        'assets/photo4.jpg',
-        'assets/photo1.jpg', // Pasangan dari photo1.jpg
-        'assets/photo2.jpg', // Pasangan dari photo2.jpg
-        'assets/photo3.jpg', // Pasangan dari photo3.jpg
-        'assets/photo4.jpg'  // Pasangan dari photo4.jpg
-    ];
-
-    let cards = [];
-    let flippedCards = [];
-    let matchedPairs = 0;
-    let lockBoard = false;
-
-    function shuffle(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    }
-
-    function createBoard() {
-        gameBoard.innerHTML = ''; // Bersihkan board
-        cards = []; // Reset array kartu
-        flippedCards = [];
-        matchedPairs = 0;
-        lockBoard = false;
-        statusMessage.textContent = 'Klik kartu untuk memulai!';
-
-        const shuffledImages = shuffle([...cardImages]); // Acak gambar
-
-        shuffledImages.forEach((imagePath, index) => {
-            const card = document.createElement('div');
-            card.classList.add('card');
-            card.dataset.image = imagePath; // Simpan path gambar di data-attribute
-            card.dataset.id = index;
-
-            const cardInner = document.createElement('div');
-            cardInner.classList.add('card-inner');
-
-            const cardFront = document.createElement('div');
-            cardFront.classList.add('card-front');
-            const img = document.createElement('img');
-            img.src = imagePath;
-            cardFront.appendChild(img);
-
-            const cardBack = document.createElement('div');
-            cardBack.classList.add('card-back');
-
-            cardInner.appendChild(cardFront);
-            cardInner.appendChild(cardBack);
-            card.appendChild(cardInner);
-
-            card.addEventListener('click', flipCard);
-            gameBoard.appendChild(card);
-            cards.push(card);
-        });
-    }
-
-    function flipCard() {
-        if (lockBoard) return; // Jika board terkunci, jangan lakukan apa-apa
-        if (this === flippedCards[0]) return; // Mencegah klik kartu yang sama dua kali
-
-        this.classList.add('flipped');
-        flippedCards.push(this);
-
-        if (flippedCards.length === 2) {
-            lockBoard = true; // Kunci board saat 2 kartu terbuka
-            checkForMatch();
-        }
-    }
-
-    function checkForMatch() {
-        const [card1, card2] = flippedCards;
-        const isMatch = card1.dataset.image === card2.dataset.image;
-
-        if (isMatch) {
-            statusMessage.textContent = 'Yeay! Cocok! ❤️';
-            matchedPairs++;
-            disableCards();
-        } else {
-            statusMessage.textContent = 'Aduh, belum cocok. Coba lagi! 🥺';
-            unflipCards();
-        }
-
-        if (matchedPairs === cardImages.length / 2) {
-            statusMessage.textContent = 'Selamat! Kamu menemukan semua pasangan! Hebat! 🎉';
-            // Bisa tambahkan animasi atau pesan kemenangan di sini
-        }
-    }
-
-    function disableCards() {
-        flippedCards[0].classList.add('matched');
-        flippedCards[1].classList.add('matched');
-        resetBoard();
-    }
-
-    function unflipCards() {
-        setTimeout(() => {
-            flippedCards[0].classList.remove('flipped');
-            flippedCards[1].classList.remove('flipped');
-            resetBoard();
-        }, 1000); // Tunggu 1 detik sebelum menutup kartu
-    }
-
-    function resetBoard() {
-        [flippedCards, lockBoard] = [[], false];
-    }
-
-    resetButton.addEventListener('click', createBoard);
-
-    // Inisialisasi board saat halaman dimuat
-    createBoard();
+  /* Init Home */
+  goHome();
 });
