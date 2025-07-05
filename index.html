@@ -12,21 +12,13 @@
       --bg-color: #F0F8FF;
       --text-color: #333;
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Poppins', sans-serif;
       background-color: var(--bg-color);
       color: var(--text-color);
       min-height: 100vh;
-      overflow-x: hidden;
     }
-
     header {
       background-color: var(--primary-color);
       color: white;
@@ -35,7 +27,6 @@
       font-size: 2rem;
       position: relative;
     }
-
     .hamburger {
       position: absolute;
       top: 1rem;
@@ -44,7 +35,6 @@
       cursor: pointer;
       z-index: 1000;
     }
-
     nav {
       position: fixed;
       top: 0;
@@ -55,12 +45,9 @@
       transform: translateX(-100%);
       transition: transform 0.3s ease;
       padding-top: 4rem;
+      z-index: 999;
     }
-
-    nav.show {
-      transform: translateX(0);
-    }
-
+    nav.show { transform: translateX(0); }
     nav a {
       display: block;
       color: white;
@@ -68,22 +55,18 @@
       text-decoration: none;
       font-size: 1.2rem;
     }
-
     section {
       padding: 2rem;
       display: none;
     }
-
     section.active {
       display: block;
       animation: fadeIn 0.5s ease-in-out;
     }
-
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
     }
-
     .button {
       background-color: var(--accent-color);
       color: white;
@@ -94,15 +77,33 @@
       margin-top: 20px;
       font-size: 1rem;
     }
-
-    .game-list button {
-      margin-bottom: 10px;
-      width: 100%;
+    .game-list button { margin-bottom: 10px; width: 100%; }
+    .game-list { max-width: 300px; margin: auto; }
+    input {
+      padding: 8px;
+      width: 200px;
+      border-radius: 5px;
+      border: 1px solid var(--accent-color);
+      margin-top: 10px;
     }
-
-    .game-list {
-      max-width: 300px;
-      margin: auto;
+    ul { list-style: none; margin-top: 20px; }
+    li {
+      background-color: white;
+      border: 1px solid var(--accent-color);
+      border-radius: 5px;
+      padding: 8px;
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    li button {
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -111,32 +112,48 @@
     <div class="hamburger" id="hamburger">☰</div>
     BitBloop
   </header>
-
   <nav id="nav">
     <a href="#" onclick="navigate('home')">Home</a>
     <a href="#" onclick="navigate('games')">Games</a>
+    <a href="#" onclick="navigate('friends')">Friends</a>
     <a href="#" onclick="navigate('account')">Account</a>
   </nav>
 
   <section id="home" class="active">
     <h2>Welcome to BitBloop!</h2>
-    <p>Fun and fresh minigames for everyone.</p>
+    <p>Fun and fresh social minigames platform.</p>
     <button class="button" onclick="navigate('games')">Play</button>
+  </section>
+
+  <section id="account">
+    <h2>My Account</h2>
+    <p>Set your name to personalize your experience.</p>
+    <input type="text" id="username" placeholder="Your Name">
+    <button class="button" onclick="saveUsername()">Save Name</button>
+    <p id="saved-name"></p>
+  </section>
+
+  <section id="friends">
+    <h2>My Friends</h2>
+    <p>Add friends to challenge and play together!</p>
+    <input type="text" id="friendName" placeholder="Friend's Name">
+    <button class="button" onclick="addFriend()">Add Friend</button>
+    <ul id="friendsList"></ul>
   </section>
 
   <section id="games">
     <h2>Select a Game</h2>
     <div class="game-list">
-      <button class="button" onclick="selectGame(1)">🎴 Memory Match</button>
-      <button class="button" onclick="selectGame(2)">🔢 Guess the Number</button>
-      <button class="button" onclick="selectGame(3)">🪨 Rock Paper Scissors</button>
-      <button class="button" onclick="selectGame(4)">🧠 Quick Math</button>
-      <button class="button" onclick="selectGame(5)">🎵 Music Match</button>
-      <button class="button" onclick="selectGame(6)">🎯 Target Clicker</button>
-      <button class="button" onclick="selectGame(7)">🔤 Word Scramble</button>
-      <button class="button" onclick="selectGame(8)">🎈 Balloon Pop</button>
-      <button class="button" onclick="selectGame(9)">🚀 Reaction Timer</button>
-      <button class="button" onclick="selectGame(10)">👀 Find the Object</button>
+      <button class="button" onclick="showInstructions(1)">🎴 Memory Match</button>
+      <button class="button" onclick="showInstructions(2)">🔢 Guess the Number</button>
+      <button class="button" onclick="showInstructions(3)">🪨 Rock Paper Scissors</button>
+      <button class="button" onclick="showInstructions(4)">🧠 Quick Math</button>
+      <button class="button" onclick="showInstructions(5)">🎵 Music Match</button>
+      <button class="button" onclick="showInstructions(6)">🎯 Target Clicker</button>
+      <button class="button" onclick="showInstructions(7)">🔤 Word Scramble</button>
+      <button class="button" onclick="showInstructions(8)">🎈 Balloon Pop</button>
+      <button class="button" onclick="showInstructions(9)">🚀 Reaction Timer</button>
+      <button class="button" onclick="showInstructions(10)">👀 Find the Object</button>
     </div>
   </section>
 
@@ -167,58 +184,74 @@
       nav.classList.remove('show');
     }
 
-    const games = {
-      1: {
-        title: 'Memory Match',
-        instructions: 'Flip cards and match the pairs. Try to remember the positions!'
-      },
-      2: {
-        title: 'Guess the Number',
-        instructions: 'Guess a number between 1 and 100. Try to get it in as few attempts as possible.'
-      },
-      3: {
-        title: 'Rock Paper Scissors',
-        instructions: 'Choose rock, paper, or scissors and try to beat the computer.'
-      },
-      4: {
-        title: 'Quick Math',
-        instructions: 'Solve as many math problems as you can in 60 seconds!'
-      },
-      5: {
-        title: 'Music Match',
-        instructions: 'Listen to a short melody and find the matching tone!'
-      },
-      6: {
-        title: 'Target Clicker',
-        instructions: 'Click targets as quickly as you can before they disappear.'
-      },
-      7: {
-        title: 'Word Scramble',
-        instructions: 'Unscramble the letters to form the correct word.'
-      },
-      8: {
-        title: 'Balloon Pop',
-        instructions: 'Pop the correct color balloons as they float up.'
-      },
-      9: {
-        title: 'Reaction Timer',
-        instructions: 'Test your reaction time by clicking as soon as the screen changes.'
-      },
-      10: {
-        title: 'Find the Object',
-        instructions: 'Search the screen and click the hidden object as fast as you can.'
+    // Account
+    function saveUsername() {
+      const username = document.getElementById('username').value;
+      localStorage.setItem('bitbloop_username', username);
+      document.getElementById('saved-name').textContent = `Hello, ${username}!`;
+    }
+    window.addEventListener('load', () => {
+      const saved = localStorage.getItem('bitbloop_username');
+      if (saved) {
+        document.getElementById('saved-name').textContent = `Hello, ${saved}!`;
+        document.getElementById('username').value = saved;
       }
+      loadFriends();
+    });
+
+    // Friends
+    function addFriend() {
+      const friendName = document.getElementById('friendName').value;
+      if (!friendName) return;
+      let friends = JSON.parse(localStorage.getItem('bitbloop_friends') || '[]');
+      friends.push(friendName);
+      localStorage.setItem('bitbloop_friends', JSON.stringify(friends));
+      document.getElementById('friendName').value = '';
+      loadFriends();
+    }
+
+    function loadFriends() {
+      let friends = JSON.parse(localStorage.getItem('bitbloop_friends') || '[]');
+      const list = document.getElementById('friendsList');
+      list.innerHTML = '';
+      friends.forEach((f, i) => {
+        const li = document.createElement('li');
+        li.textContent = f;
+        const delBtn = document.createElement('button');
+        delBtn.textContent = 'Delete';
+        delBtn.onclick = () => deleteFriend(i);
+        li.appendChild(delBtn);
+        list.appendChild(li);
+      });
+    }
+
+    function deleteFriend(index) {
+      let friends = JSON.parse(localStorage.getItem('bitbloop_friends') || '[]');
+      friends.splice(index, 1);
+      localStorage.setItem('bitbloop_friends', JSON.stringify(friends));
+      loadFriends();
+    }
+
+    // Games
+    const games = {
+      1: { title: 'Memory Match', instructions: 'Flip cards and match the pairs.' },
+      2: { title: 'Guess the Number', instructions: 'Guess a number between 1 and 100.' },
+      3: { title: 'Rock Paper Scissors', instructions: 'Choose rock, paper, or scissors.' },
+      4: { title: 'Quick Math', instructions: 'Solve as many math problems as you can in 60 seconds.' },
+      5: { title: 'Music Match', instructions: 'Listen to a short melody and find the match.' },
+      6: { title: 'Target Clicker', instructions: 'Click targets quickly before they disappear.' },
+      7: { title: 'Word Scramble', instructions: 'Unscramble the letters to form the correct word.' },
+      8: { title: 'Balloon Pop', instructions: 'Pop the correct color balloons as they float up.' },
+      9: { title: 'Reaction Timer', instructions: 'Click as soon as the screen changes.' },
+      10:{ title: 'Find the Object', instructions: 'Click the hidden object as fast as you can.' }
     };
-
     let selectedGame = null;
-
-    function selectGame(gameId) {
-      selectedGame = games[gameId];
+    function showInstructions(id) {
+      selectedGame = games[id];
       document.getElementById('game-title').textContent = selectedGame.title;
       document.getElementById('game-instructions').textContent = selectedGame.instructions;
       navigate('instructions');
     }
-
     function startGame() {
       document.getElementById('playing-title').textContent = `Now Playing: ${selectedGame.title}`;
       navigate('gameplay');
