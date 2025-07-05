@@ -1,482 +1,484 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MiniGames Kita ❤️</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Mini Games Seru</title>
+  <style>
+    :root {
+      --pink: #ff69b4;
+      --pink-dark: #ff1493;
+      --bg-grad: linear-gradient(135deg, #FFC0CB, #FFDAB9);
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg-grad);
+      color: #333;
+      overflow-x: hidden;
+    }
+    h1, h2, h3 {
+      color: var(--pink-dark);
+    }
+    .hidden { display: none; }
+
+    /* Sidebar */
+    #menu-button {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      background-color: var(--pink);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 1.5em;
+      cursor: pointer;
+      z-index: 1001;
+    }
+    #sidebar {
+      position: fixed;
+      top: 0;
+      left: -260px;
+      width: 250px;
+      height: 100%;
+      background: white;
+      box-shadow: 2px 0 12px rgba(0,0,0,0.2);
+      padding: 20px;
+      transition: left 0.3s ease;
+      z-index: 1000;
+    }
+    #sidebar.open {
+      left: 0;
+    }
+    #sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #sidebar-header button {
+      background: none;
+      border: none;
+      font-size: 1.5em;
+      color: var(--pink-dark);
+      cursor: pointer;
+    }
+    #sidebar-content p {
+      margin: 10px 0;
+    }
+    .sidebar-link {
+      display: block;
+      margin: 10px 0;
+      background-color: var(--pink);
+      color: white;
+      padding: 10px;
+      border-radius: 6px;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .sidebar-link:hover {
+      background-color: var(--pink-dark);
+    }
+
+    /* Containers */
+    .container {
+      max-width: 800px;
+      margin: 80px auto 30px;
+      padding: 20px;
+      background-color: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .game-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .game-card {
+      background: white;
+      border: 2px solid var(--pink);
+      border-radius: 12px;
+      width: 220px;
+      padding: 20px;
+      text-decoration: none;
+      color: #333;
+      box-shadow: 0 5px 12px rgba(0,0,0,0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .game-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+      background-color: #fff0f5;
+    }
+
+    .action-button {
+      background-color: var(--pink);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      cursor: pointer;
+      margin: 10px;
+      font-size: 1em;
+      transition: background-color 0.3s;
+    }
+    .action-button:hover {
+      background-color: var(--pink-dark);
+    }
+
+    /* Memory Game */
+    #game-board {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+      justify-items: center;
+    }
+    .card {
+      width: 80px;
+      height: 100px;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.6s;
+    }
+    .card.flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .card-front img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .card-back {
+      background-color: var(--pink);
+      transform: rotateY(180deg);
+    }
+
+    /* Hidden Object Game */
+    #background-image {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      margin: 20px auto;
+      background: #eee;
+      border: 2px solid var(--pink);
+      border-radius: 8px;
+    }
+    .hidden-object {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background-color: var(--pink-dark);
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .found {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    #message {
+      margin-top: 15px;
+      font-size: 1.1em;
+      color: var(--pink-dark);
+      transition: opacity 0.5s;
+    }
+  </style>
 </head>
 <body>
-  <!-- Sidebar -->
-  <div id="sidebar" class="sidebar">
-    <div class="sidebar-header">
-      <h2>❤️ Akun Kamu</h2>
-      <button id="close-sidebar" class="close-button">×</button>
+  <button id="menu-button">≡</button>
+  <div id="sidebar">
+    <div id="sidebar-header">
+      <h3>❤️ Akun Kamu</h3>
+      <button id="close-sidebar">×</button>
     </div>
-    <div class="sidebar-content">
-      <p><strong>Nama:</strong> <span id="sidebar-name">Guest User</span></p>
-      <p><strong>Points:</strong> <span id="sidebar-points">0</span></p>
-      <hr>
-      <button class="sidebar-link" onclick="goHome()">🏠 Home</button>
-      <button class="sidebar-link" onclick="showProfile()">👤 Profile</button>
-      <button class="sidebar-link" onclick="resetAccount()">🚪 Logout</button>
+    <div id="sidebar-content">
+      <p>Nama: <span id="sidebar-name">Guest User</span></p>
+      <p>Points: <span id="sidebar-points">0</span></p>
+      <div class="sidebar-link" onclick="goHome()">🏠 Home</div>
+      <div class="sidebar-link" onclick="showProfile()">👤 Profile</div>
+      <div class="sidebar-link" onclick="resetAccount()">🚪 Logout</div>
     </div>
   </div>
-  <button id="menu-button" class="menu-button">≡</button>
 
-  <!-- Home Menu -->
-  <div id="main-container">
-    <div class="container">
-      <h1>Selamat Datang di Dunia Game Kita! ❤️</h1>
-      <p>Pilih game yang ingin kamu mainkan bersama aku:</p>
-      <div class="game-list">
-        <div class="game-card" onclick="startGame('memory')">
-          <h2>Memory Match Kita</h2>
-          <p>Uji ingatanmu dengan foto-foto manis kita!</p>
-        </div>
-        <div class="game-card" onclick="startGame('hidden')">
-          <h2>Cari Benda Tersembunyi</h2>
-          <p>Temukan benda-benda kenangan kita di foto spesial!</p>
-        </div>
+  <div id="main-container" class="container">
+    <h1>Selamat Datang di Dunia Game Kita! ❤️</h1>
+    <p>Pilih game yang ingin kamu mainkan bersama aku:</p>
+    <div class="game-list">
+      <div class="game-card" onclick="startGame('memory')">
+        <h3>Memory Match Kita</h3>
+        <p>Uji ingatanmu dengan foto-foto manis kita!</p>
+      </div>
+      <div class="game-card" onclick="startGame('hidden')">
+        <h3>Cari Benda Tersembunyi</h3>
+        <p>Temukan benda-benda kenangan kita di foto spesial!</p>
       </div>
     </div>
   </div>
 
-  <!-- Game Area -->
-  <div id="game-area" class="hidden">
+  <div id="game-area" class="container hidden">
     <div id="memory-game" class="hidden">
-      <div class="game-container">
-        <h1>Uji Ingatanmu dengan Foto Kita! ❤️</h1>
-        <p id="status-message">Klik kartu untuk memulai!</p>
-        <div id="game-board" class="game-board"></div>
-        <button id="reset-button" class="action-button">Main Lagi</button>
-        <button class="back-button" onclick="goHome()">Kembali ke Menu</button>
-      </div>
+      <h2>Uji Ingatanmu dengan Foto Kita! ❤️</h2>
+      <p id="status-message">Klik kartu untuk memulai!</p>
+      <div id="game-board"></div>
+      <button class="action-button" id="reset-button">Main Lagi</button>
+      <button class="action-button" onclick="goHome()">Kembali ke Menu</button>
     </div>
-
     <div id="hidden-game" class="hidden">
-      <div class="game-container">
-        <h1>Temukan Benda Kenangan Kita! ✨</h1>
-        <p>Klik benda-benda yang tersembunyi di foto ini. Ada <span id="total-objects">0</span> benda yang harus kamu temukan!</p>
-        <div class="image-area">
-          <img id="background-image" src="assets/photo_background.jpg" alt="Foto Kenangan">
-          <div class="hidden-object" id="obj1" style="top:30%; left:40%;"></div>
-          <div class="hidden-object" id="obj2" style="top:60%; left:20%;"></div>
-          <div class="hidden-object" id="obj3" style="top:50%; left:70%;"></div>
-        </div>
-        <p>Benda ditemukan: <span id="found-count">0</span> / <span id="total-objects">0</span></p>
-        <div id="message" class="message"></div>
-        <button class="back-button" onclick="goHome()">Kembali ke Menu</button>
+      <h2>Temukan Benda Kenangan Kita! ✨</h2>
+      <p>Klik benda-benda yang tersembunyi di foto ini.</p>
+      <div id="background-image">
+        <div class="hidden-object" id="obj1" style="top: 40%; left: 30%;"></div>
+        <div class="hidden-object" id="obj2" style="top: 60%; left: 60%;"></div>
+        <div class="hidden-object" id="obj3" style="top: 20%; left: 70%;"></div>
       </div>
+      <p>Benda ditemukan: <span id="found-count">0</span> / <span id="total-objects">3</span></p>
+      <div id="message"></div>
+      <button class="action-button" onclick="goHome()">Kembali ke Menu</button>
     </div>
   </div>
 
-  <!-- Profile Area -->
-  <div id="profile-area" class="hidden">
+  <div id="profile-area" class="container hidden">
     <h2>👤 Profile Kamu</h2>
-    <div class="profile-box">
-      <label for="name-input">Nama Kamu ❤️</label>
-      <input type="text" id="name-input" placeholder="Nama kamu...">
-      <button id="save-name" class="action-button">Simpan Nama</button>
-      <p><strong>Total Points:</strong> <span id="profile-points">0</span></p>
-    </div>
-    <button class="back-button" onclick="goHome()">Kembali ke Menu</button>
+    <label for="name-input">Nama Kamu ❤️</label><br>
+    <input type="text" id="name-input" placeholder="Nama kamu..." style="margin-top:10px; padding:8px; border-radius:6px; border:1px solid #ccc;">
+    <button class="action-button" id="save-name">Simpan Nama</button>
+    <p>Total Points: <span id="profile-points">0</span></p>
+    <button class="action-button" onclick="goHome()">Kembali ke Menu</button>
   </div>
 
-  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const sidebar = document.getElementById('sidebar');
+      const menuButton = document.getElementById('menu-button');
+      const closeSidebar = document.getElementById('close-sidebar');
+      const sidebarName = document.getElementById('sidebar-name');
+      const sidebarPoints = document.getElementById('sidebar-points');
+      const profilePoints = document.getElementById('profile-points');
+      const nameInput = document.getElementById('name-input');
+
+      menuButton.addEventListener('click', () => sidebar.classList.add('open'));
+      closeSidebar.addEventListener('click', () => sidebar.classList.remove('open'));
+
+      let userName = localStorage.getItem('userName') || 'Guest User';
+      let userPoints = parseInt(localStorage.getItem('userPoints') || '0');
+      updateAccountUI();
+
+      document.getElementById('save-name').addEventListener('click', () => {
+        userName = nameInput.value.trim() || 'Guest User';
+        localStorage.setItem('userName', userName);
+        updateAccountUI();
+        goHome();
+      });
+
+      function updateAccountUI() {
+        sidebarName.textContent = userName;
+        sidebarPoints.textContent = userPoints;
+        profilePoints.textContent = userPoints;
+        nameInput.value = userName;
+      }
+
+      function addPoints(points) {
+        userPoints += points;
+        localStorage.setItem('userPoints', userPoints);
+        updateAccountUI();
+      }
+
+      window.resetAccount = () => {
+        if (confirm('Yakin mau logout? Nama & poin akan direset.')) {
+          userName = 'Guest User';
+          userPoints = 0;
+          localStorage.removeItem('userName');
+          localStorage.removeItem('userPoints');
+          updateAccountUI();
+          goHome();
+        }
+      };
+
+      const mainContainer = document.getElementById('main-container');
+      const gameArea = document.getElementById('game-area');
+      const memoryGame = document.getElementById('memory-game');
+      const hiddenGame = document.getElementById('hidden-game');
+      const profileArea = document.getElementById('profile-area');
+
+      window.goHome = () => {
+        mainContainer.classList.remove('hidden');
+        gameArea.classList.add('hidden');
+        memoryGame.classList.add('hidden');
+        hiddenGame.classList.add('hidden');
+        profileArea.classList.add('hidden');
+        sidebar.classList.remove('open');
+      };
+
+      window.showProfile = () => {
+        mainContainer.classList.add('hidden');
+        gameArea.classList.add('hidden');
+        memoryGame.classList.add('hidden');
+        hiddenGame.classList.add('hidden');
+        profileArea.classList.remove('hidden');
+        sidebar.classList.remove('open');
+      };
+
+      window.startGame = (type) => {
+        mainContainer.classList.add('hidden');
+        gameArea.classList.remove('hidden');
+        if (type === 'memory') {
+          memoryGame.classList.remove('hidden');
+          hiddenGame.classList.add('hidden');
+          createMemoryBoard();
+        } else if (type === 'hidden') {
+          hiddenGame.classList.remove('hidden');
+          memoryGame.classList.add('hidden');
+          initHiddenObjects();
+        }
+        sidebar.classList.remove('open');
+      };
+
+      /* Memory Game */
+      const gameBoard = document.getElementById('game-board');
+      const resetButton = document.getElementById('reset-button');
+      const statusMessage = document.getElementById('status-message');
+      const cardImages = [
+        'https://picsum.photos/seed/1/100',
+        'https://picsum.photos/seed/2/100',
+        'https://picsum.photos/seed/3/100',
+        'https://picsum.photos/seed/4/100',
+        'https://picsum.photos/seed/1/100',
+        'https://picsum.photos/seed/2/100',
+        'https://picsum.photos/seed/3/100',
+        'https://picsum.photos/seed/4/100'
+      ];
+      let cards = [], flippedCards = [], matchedPairs = 0, lockBoard = false;
+
+      function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+      }
+
+      function createMemoryBoard() {
+        gameBoard.innerHTML = '';
+        cards = []; flippedCards = []; matchedPairs = 0; lockBoard = false;
+        statusMessage.textContent = 'Klik kartu untuk memulai!';
+        const shuffledImages = shuffle([...cardImages]);
+        shuffledImages.forEach((imgSrc, idx) => {
+          const card = document.createElement('div');
+          card.classList.add('card');
+          card.dataset.image = imgSrc;
+          card.innerHTML = `
+            <div class="card-inner">
+              <div class="card-front"><img src="${imgSrc}" alt="Memory"></div>
+              <div class="card-back"></div>
+            </div>
+          `;
+          card.addEventListener('click', flipCard);
+          gameBoard.appendChild(card);
+          cards.push(card);
+        });
+      }
+
+      function flipCard() {
+        if (lockBoard || this === flippedCards[0]) return;
+        this.classList.add('flipped');
+        flippedCards.push(this);
+        if (flippedCards.length === 2) {
+          lockBoard = true;
+          checkForMatch();
+        }
+      }
+
+      function checkForMatch() {
+        const [card1, card2] = flippedCards;
+        const isMatch = card1.dataset.image === card2.dataset.image;
+        if (isMatch) {
+          statusMessage.textContent = 'Yeay! Cocok! ❤️';
+          matchedPairs++;
+          disableCards();
+        } else {
+          statusMessage.textContent = 'Aduh, belum cocok. Coba lagi! 🥺';
+          unflipCards();
+        }
+        if (matchedPairs === cardImages.length / 2) {
+          statusMessage.textContent = 'Selamat! Kamu menemukan semua pasangan! 🎉';
+          addPoints(10);
+        }
+      }
+
+      function disableCards() {
+        flippedCards.forEach(card => card.classList.add('matched'));
+        resetBoard();
+      }
+      function unflipCards() {
+        setTimeout(() => {
+          flippedCards.forEach(card => card.classList.remove('flipped'));
+          resetBoard();
+        }, 1000);
+      }
+      function resetBoard() {
+        flippedCards = [];
+        lockBoard = false;
+      }
+      resetButton.addEventListener('click', createMemoryBoard);
+
+      /* Hidden Object Game */
+      const hiddenObjects = document.querySelectorAll('.hidden-object');
+      const foundCountSpan = document.getElementById('found-count');
+      const totalObjectsSpan = document.getElementById('total-objects');
+      const messageDisplay = document.getElementById('message');
+      totalObjectsSpan.textContent = hiddenObjects.length;
+
+      function initHiddenObjects() {
+        let foundObjects = 0;
+        hiddenObjects.forEach(obj => obj.classList.remove('found'));
+        foundCountSpan.textContent = foundObjects;
+        hiddenObjects.forEach(obj => {
+          obj.onclick = () => {
+            if (!obj.classList.contains('found')) {
+              obj.classList.add('found');
+              foundObjects++;
+              foundCountSpan.textContent = foundObjects;
+              showMessage("Ketemu benda kenangan!");
+              if (foundObjects === hiddenObjects.length) {
+                setTimeout(() => {
+                  showMessage("Hebat! Semua benda ditemukan ❤️");
+                  addPoints(10);
+                }, 800);
+              }
+            }
+          };
+        });
+      }
+
+      function showMessage(msg) {
+        messageDisplay.textContent = msg;
+        messageDisplay.style.opacity = 1;
+        setTimeout(() => messageDisplay.style.opacity = 0, 3000);
+      }
+
+      goHome();
+    });
+  </script>
 </body>
 </html>
-/* Global Styles */
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  margin: 0;
-  background: linear-gradient(135deg, #FFC0CB 0%, #FFDAB9 100%);
-  color: #333;
-  overflow-x: hidden;
-}
-
-.hidden { display: none; }
-
-.container, .game-container {
-  background-color: rgba(255, 255, 255, 0.95);
-  padding: 30px 40px;
-  border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-  max-width: 800px;
-  width: 90%;
-  margin: 30px auto;
-  text-align: center;
-  animation: fadeIn 1s ease-out;
-}
-
-h1 {
-  color: #FF1493;
-  font-size: 2.5em;
-  margin-bottom: 20px;
-}
-
-p {
-  font-size: 1.2em;
-  margin-bottom: 20px;
-}
-
-/* Home Game List */
-.game-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 30px;
-}
-
-.game-card {
-  background-color: #fff;
-  border: 2px solid #FF69B4;
-  border-radius: 15px;
-  padding: 25px;
-  width: 260px;
-  box-shadow: 0 8px 15px rgba(0,0,0,0.1);
-  text-decoration: none;
-  color: #333;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.game-card:hover {
-  transform: translateY(-10px) scale(1.03);
-  box-shadow: 0 15px 25px rgba(0,0,0,0.2);
-  background-color: #FFF0F5;
-}
-
-/* Buttons */
-.action-button, .back-button, .sidebar-link {
-  background-color: #FF69B4;
-  color: white;
-  padding: 12px 25px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1.1em;
-  margin: 10px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.action-button:hover, .back-button:hover, .sidebar-link:hover {
-  background-color: #FF1493;
-  transform: translateY(-3px);
-}
-
-/* Sidebar Styles */
-.menu-button {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  background-color: #FF69B4;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 18px;
-  font-size: 1.5em;
-  cursor: pointer;
-  z-index: 999;
-}
-
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: -280px;
-  width: 260px;
-  height: 100%;
-  background-color: #fff;
-  box-shadow: 2px 0 10px rgba(0,0,0,0.2);
-  padding: 20px;
-  border-right: 3px solid #FF69B4;
-  transition: left 0.4s ease;
-  z-index: 998;
-}
-
-.sidebar.open {
-  left: 0;
-}
-
-.sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.close-button {
-  background: none;
-  border: none;
-  font-size: 1.8em;
-  cursor: pointer;
-  color: #FF69B4;
-}
-
-.sidebar-content {
-  margin-top: 20px;
-}
-
-.sidebar-content p {
-  margin: 10px 0;
-  font-size: 1.1em;
-  color: #333;
-}
-
-/* Profile Page */
-#profile-area {
-  max-width: 500px;
-  margin: 30px auto;
-  padding: 20px 30px;
-  background-color: #fff0f5;
-  border: 2px solid #FF69B4;
-  bord
-document.addEventListener('DOMContentLoaded', () => {
-  /* Sidebar Toggle */
-  const sidebar = document.getElementById('sidebar');
-  const menuButton = document.getElementById('menu-button');
-  const closeSidebar = document.getElementById('close-sidebar');
-  const sidebarName = document.getElementById('sidebar-name');
-  const sidebarPoints = document.getElementById('sidebar-points');
-  const profilePoints = document.getElementById('profile-points');
-  const nameInput = document.getElementById('name-input');
-
-  menuButton.addEventListener('click', () => sidebar.classList.add('open'));
-  closeSidebar.addEventListener('click', () => sidebar.classList.remove('open'));
-
-  /* Storage */
-  let userName = localStorage.getItem('userName') || 'Guest User';
-  let userPoints = parseInt(localStorage.getItem('userPoints') || '0');
-  updateAccountUI();
-
-  document.getElementById('save-name').addEventListener('click', () => {
-    userName = nameInput.value.trim() || 'Guest User';
-    localStorage.setItem('userName', userName);
-    updateAccountUI();
-    goHome();
-  });
-
-  function updateAccountUI() {
-    sidebarName.textContent = userName;
-    sidebarPoints.textContent = userPoints;
-    profilePoints.textContent = userPoints;
-    nameInput.value = userName;
-  }
-
-  function addPoints(points) {
-    userPoints += points;
-    localStorage.setItem('userPoints', userPoints);
-    updateAccountUI();
-  }
-
-  function resetAccount() {
-    if (confirm('Yakin mau logout? Nama & poin akan direset.')) {
-      userName = 'Guest User';
-      userPoints = 0;
-      localStorage.removeItem('userName');
-      localStorage.removeItem('userPoints');
-      updateAccountUI();
-      goHome();
-    }
-  }
-
-  /* Navigation */
-  const mainContainer = document.getElementById('main-container');
-  const gameArea = document.getElementById('game-area');
-  const memoryGame = document.getElementById('memory-game');
-  const hiddenGame = document.getElementById('hidden-game');
-  const profileArea = document.getElementById('profile-area');
-
-  window.goHome = () => {
-    mainContainer.classList.remove('hidden');
-    gameArea.classList.add('hidden');
-    memoryGame.classList.add('hidden');
-    hiddenGame.classList.add('hidden');
-    profileArea.classList.add('hidden');
-    sidebar.classList.remove('open');
-  };
-
-  window.showProfile = () => {
-    mainContainer.classList.add('hidden');
-    gameArea.classList.add('hidden');
-    memoryGame.classList.add('hidden');
-    hiddenGame.classList.add('hidden');
-    profileArea.classList.remove('hidden');
-    sidebar.classList.remove('open');
-  };
-
-  window.resetAccount = resetAccount;
-
-  window.startGame = (type) => {
-    mainContainer.classList.add('hidden');
-    gameArea.classList.remove('hidden');
-    if (type === 'memory') {
-      memoryGame.classList.remove('hidden');
-      hiddenGame.classList.add('hidden');
-      createMemoryBoard();
-    } else if (type === 'hidden') {
-      hiddenGame.classList.remove('hidden');
-      memoryGame.classList.add('hidden');
-      initHiddenObjects();
-    }
-    sidebar.classList.remove('open');
-  };
-
-  /* Memory Game */
-  const gameBoard = document.getElementById('game-board');
-  const resetButton = document.getElementById('reset-button');
-  const statusMessage = document.getElementById('status-message');
-
-  const cardImages = [
-    'assets/photo1.jpg', 'assets/photo2.jpg', 'assets/photo3.jpg', 'assets/photo4.jpg',
-    'assets/photo1.jpg', 'assets/photo2.jpg', 'assets/photo3.jpg', 'assets/photo4.jpg'
-  ];
-
-  let cards = [], flippedCards = [], matchedPairs = 0, lockBoard = false;
-
-  function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  }
-
-  function createMemoryBoard() {
-    gameBoard.innerHTML = '';
-    cards = [];
-    flippedCards = [];
-    matchedPairs = 0;
-    lockBoard = false;
-    statusMessage.textContent = 'Klik kartu untuk memulai!';
-    const shuffledImages = shuffle([...cardImages]);
-    shuffledImages.forEach((imagePath, index) => {
-      const card = document.createElement('div');
-      card.classList.add('card');
-      card.dataset.image = imagePath;
-      card.dataset.id = index;
-
-      const cardInner = document.createElement('div');
-      cardInner.classList.add('card-inner');
-
-      const cardFront = document.createElement('div');
-      cardFront.classList.add('card-front');
-      const img = document.createElement('img');
-      img.src = imagePath;
-      cardFront.appendChild(img);
-
-      const cardBack = document.createElement('div');
-      cardBack.classList.add('card-back');
-
-      cardInner.appendChild(cardFront);
-      cardInner.appendChild(cardBack);
-      card.appendChild(cardInner);
-
-      card.addEventListener('click', flipCard);
-      gameBoard.appendChild(card);
-      cards.push(card);
-    });
-  }
-
-  function flipCard() {
-    if (lockBoard || this === flippedCards[0]) return;
-    this.classList.add('flipped');
-    flippedCards.push(this);
-    if (flippedCards.length === 2) {
-      lockBoard = true;
-      checkForMatch();
-    }
-  }
-
-  function checkForMatch() {
-    const [card1, card2] = flippedCards;
-    const isMatch = card1.dataset.image === card2.dataset.image;
-    if (isMatch) {
-      statusMessage.textContent = 'Yeay! Cocok! ❤️';
-      matchedPairs++;
-      disableCards();
-    } else {
-      statusMessage.textContent = 'Aduh, belum cocok. Coba lagi! 🥺';
-      unflipCards();
-    }
-    if (matchedPairs === cardImages.length / 2) {
-      statusMessage.textContent = 'Selamat! Kamu menemukan semua pasangan! Hebat! 🎉';
-      addPoints(10);
-    }
-  }
-
-  function disableCards() {
-    flippedCards[0].classList.add('matched');
-    flippedCards[1].classList.add('matched');
-    resetBoard();
-  }
-
-  function unflipCards() {
-    setTimeout(() => {
-      flippedCards[0].classList.remove('flipped');
-      flippedCards[1].classList.remove('flipped');
-      resetBoard();
-    }, 1000);
-  }
-
-  function resetBoard() {
-    [flippedCards, lockBoard] = [[], false];
-  }
-
-  resetButton.addEventListener('click', createMemoryBoard);
-
-  /* Hidden Object Game */
-  const hiddenObjects = document.querySelectorAll('.hidden-object');
-  const foundCountSpan = document.getElementById('found-count');
-  const totalObjectsSpan = document.getElementById('total-objects');
-  const messageDisplay = document.getElementById('message');
-  const backgroundImage = document.getElementById('background-image');
-
-  function initHiddenObjects() {
-    let foundObjects = 0;
-    hiddenObjects.forEach(obj => obj.classList.remove('found'));
-    const totalObjects = hiddenObjects.length;
-    totalObjectsSpan.textContent = totalObjects;
-    foundCountSpan.textContent = foundObjects;
-
-    hiddenObjects.forEach(obj => {
-      obj.addEventListener('click', () => {
-        if (!obj.classList.contains('found')) {
-          obj.classList.add('found');
-          foundObjects++;
-          foundCountSpan.textContent = foundObjects;
-          let personalMessage = "Kamu menemukanku!";
-          switch(obj.id) {
-            case 'obj1': personalMessage = "Yay! Itu foto kencan pertama kita ❤️"; break;
-            case 'obj2': personalMessage = "Hore! Hadiah yang aku kasih dulu 🥰"; break;
-            case 'obj3': personalMessage = "Yeay! Tiket konser favorit kita ✨"; break;
-          }
-          showMessage(personalMessage);
-          if (foundObjects === totalObjects) {
-            setTimeout(() => {
-              showMessage("Selamat! Kamu menemukan semua benda kenangan kita! ❤️");
-              addPoints(10);
-            }, 1000);
-          }
-        }
-      });
-    });
-  }
-
-  function showMessage(msg) {
-    messageDisplay.textContent = msg;
-    messageDisplay.style.opacity = 0;
-    messageDisplay.style.transform = 'translateY(10px)';
-    setTimeout(() => {
-      messageDisplay.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-      messageDisplay.style.opacity = 1;
-      messageDisplay.style.transform = 'translateY(0)';
-    }, 50);
-    setTimeout(() => {
-      messageDisplay.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-      messageDisplay.style.opacity = 0;
-      messageDisplay.style.transform = 'translateY(-10px)';
-    }, 3000);
-  }
-
-  /* Init Home */
-  goHome();
-});
