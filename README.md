@@ -1,2 +1,2 @@
-# minigames
-Mini Games by Ricvess
+# BitBloop
+BitBloop by Ricvess
