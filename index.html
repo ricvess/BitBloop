@@ -18,12 +18,12 @@
       background-color: var(--bg-color);
       color: var(--text-color);
       min-height: 100vh;
+      text-align: center;
     }
     header {
       background-color: var(--primary-color);
       color: white;
       padding: 1rem;
-      text-align: center;
       font-size: 2rem;
       position: relative;
     }
@@ -46,6 +46,7 @@
       transition: transform 0.3s ease;
       padding-top: 4rem;
       z-index: 999;
+      text-align: left;
     }
     nav.show { transform: translateX(0); }
     nav a {
@@ -58,10 +59,10 @@
     section {
       padding: 2rem;
       display: none;
+      animation: fadeIn 0.5s ease-in-out;
     }
     section.active {
       display: block;
-      animation: fadeIn 0.5s ease-in-out;
     }
     @keyframes fadeIn {
       from { opacity: 0; }
@@ -77,16 +78,27 @@
       margin-top: 20px;
       font-size: 1rem;
     }
-    .game-list button { margin-bottom: 10px; width: 100%; }
-    .game-list { max-width: 300px; margin: auto; }
+    .game-list button {
+      margin-bottom: 10px;
+      width: 100%;
+    }
+    .game-list {
+      max-width: 300px;
+      margin: 20px auto;
+    }
     input {
       padding: 8px;
       width: 200px;
       border-radius: 5px;
       border: 1px solid var(--accent-color);
       margin-top: 10px;
+      text-align: center;
     }
-    ul { list-style: none; margin-top: 20px; }
+    ul {
+      list-style: none;
+      margin-top: 20px;
+      padding: 0;
+    }
     li {
       background-color: white;
       border: 1px solid var(--accent-color);
@@ -164,8 +176,8 @@
   </section>
 
   <section id="gameplay">
-    <h2 id="playing-title">Now Playing: </h2>
-    <p>Game content coming soon...</p>
+    <h2 id="playing-title">Now Playing:</h2>
+    <p id="playing-instructions">Loading game...</p>
     <button class="button" onclick="navigate('games')">Back to Game Menu</button>
   </section>
 
@@ -246,14 +258,22 @@
       10:{ title: 'Find the Object', instructions: 'Click the hidden object as fast as you can.' }
     };
     let selectedGame = null;
+
     function showInstructions(id) {
       selectedGame = games[id];
       document.getElementById('game-title').textContent = selectedGame.title;
       document.getElementById('game-instructions').textContent = selectedGame.instructions;
       navigate('instructions');
     }
+
     function startGame() {
-      document.getElementById('playing-title').textContent = `Now Playing: ${selectedGame.title}`;
+      if (selectedGame) {
+        document.getElementById('playing-title').textContent = `Now Playing: ${selectedGame.title}`;
+        document.getElementById('playing-instructions').textContent = selectedGame.instructions;
+      } else {
+        document.getElementById('playing-title').textContent = 'Now Playing';
+        document.getElementById('playing-instructions').textContent = 'Loading game...';
+      }
       navigate('gameplay');
     }
   </script>
