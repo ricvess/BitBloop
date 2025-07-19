@@ -3,211 +3,300 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BitBloop Ultimate</title>
+  <title>BitBloop</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #111, #222);
-      color: white;
-      text-align: center;
+      background-color: #f5f5f5;
+      color: #333;
       margin: 0;
       padding: 0;
+      text-align: center;
+      transition: background 0.3s, color 0.3s;
     }
-    h1 { font-size: 2.2em; margin: 20px 0; }
+    .dark-mode {
+      background-color: #111;
+      color: #f5f5f5;
+    }
+    header, footer {
+      padding: 1em;
+      background-color: #2e86de;
+      color: white;
+    }
+    main {
+      padding: 2em;
+    }
+    section {
+      display: none;
+    }
+    section.active {
+      display: block;
+    }
     button {
-      padding: 10px 20px;
+      margin: 1em;
+      padding: 0.8em 2em;
       font-size: 1em;
-      margin: 10px;
-      border: none;
-      border-radius: 8px;
       cursor: pointer;
-      background-color: #00bcd4;
-      color: #fff;
+      border: none;
+      border-radius: 5px;
+      background: #2e86de;
+      color: white;
+      transition: background 0.3s;
     }
     button:hover {
-      background-color: #008c9e;
+      background: #1b4f72;
     }
-    #loginForm, #gameArea, #menu, #profile {
-      display: none;
+    input[type="text"] {
+      padding: 0.5em;
+      font-size: 1em;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .game-container {
       margin-top: 20px;
     }
-    .game-list button {
-      display: block;
-      width: 200px;
-      margin: 10px auto;
+    .card {
+      width: 60px;
+      height: 60px;
+      display: inline-block;
+      background: #ccc;
+      margin: 5px;
+      font-size: 24px;
+      line-height: 60px;
+      cursor: pointer;
+      border-radius: 5px;
     }
-    .hidden { display: none; }
   </style>
 </head>
 <body>
-  <h1>🎮 BitBloop Ultimate</h1>
+  <header>
+    <h1>BitBloop</h1>
+    <p>Level: <span id="user-level">1</span> | Points: <span id="user-points">0</span></p>
+  </header>
 
-  <div id="loginForm">
-    <input type="text" id="username" placeholder="Enter username" />
-    <br><br>
-    <button onclick="login()">Login</button>
-  </div>
+  <main>
+    <!-- Login Section -->
+    <section id="login" class="active">
+      <h2>Welcome to BitBloop</h2>
+      <p>Enter your username to start</p>
+      <input type="text" id="usernameInput" placeholder="Enter username" />
+      <br />
+      <button onclick="login()">Enter</button>
+    </section>
 
-  <div id="profile">
-    <p id="greeting"></p>
-    <p id="stats"></p>
-    <button onclick="logout()">Logout</button>
-  </div>
+    <!-- Menu Section -->
+    <section id="menu">
+      <h2>Main Menu</h2>
+      <button onclick="navigate('games')">Play Games</button>
+      <button onclick="navigate('leaderboard')">Leaderboard</button>
+      <button onclick="navigate('settings')">Settings</button>
+    </section>
 
-  <div id="menu" class="game-list"></div>
+    <!-- Game Selection -->
+    <section id="games">
+      <h2>Game Library</h2>
+      <div>
+        <button onclick="openGame('memory')">Memory Match</button>
+        <button onclick="openGame('math')">Math Rush</button>
+        <button onclick="openGame('tap')">Tap Fast</button>
+        <button onclick="openGame('click')">Click the Box</button>
+        <button onclick="openGame('guess')">Guess Number</button>
+      </div>
+      <div class="game-container" id="gameArea"></div>
+      <button onclick="navigate('menu')">Back</button>
+    </section>
 
-  <div id="gameArea"></div>
+    <!-- Leaderboard -->
+    <section id="leaderboard">
+      <h2>Leaderboard</h2>
+      <ul id="leaderboardList"></ul>
+      <button onclick="navigate('menu')">Back</button>
+    </section>
 
-  <audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
-  <audio id="winSound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"></audio>
-  <audio id="loseSound" src="https://www.soundjay.com/misc/sounds/fail-buzzer-01.mp3"></audio>
+    <!-- Settings -->
+    <section id="settings">
+      <h2>Settings</h2>
+      <button onclick="toggleTheme()">Toggle Theme</button>
+      <button onclick="toggleSound()">Toggle Sound</button>
+      <button onclick="navigate('menu')">Back</button>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 BitBloop. All rights reserved.</p>
+  </footer>
 
   <script>
-    const userData = {
-      points: 0,
-      level: 1
-    };
-
-    const games = {
-      "🎯 Tebak Angka": () => {
-        const num = Math.floor(Math.random() * 10) + 1;
-        let guess = prompt("Tebak angka 1-10:");
-        if (parseInt(guess) === num) {
-          win("Benar! 🎉 Angkanya " + num);
-        } else {
-          lose("Salah! 😢 Angkanya " + num);
-        }
-      },
-
-      "✊ Batu Gunting Kertas": () => {
-        const choices = ["Batu", "Gunting", "Kertas"];
-        const user = prompt("Pilih: Batu, Gunting, atau Kertas?");
-        const bot = choices[Math.floor(Math.random() * 3)];
-        if (!user) return;
-        if (user === bot) return alert("Seri! Bot juga pilih " + bot);
-        if (
-          (user === "Batu" && bot === "Gunting") ||
-          (user === "Gunting" && bot === "Kertas") ||
-          (user === "Kertas" && bot === "Batu")
-        ) {
-          win("Menang! Bot pilih " + bot);
-        } else {
-          lose("Kalah! Bot pilih " + bot);
-        }
-      },
-
-      "🧠 Quick Math": () => {
-        const a = Math.floor(Math.random() * 10);
-        const b = Math.floor(Math.random() * 10);
-        const answer = a + b;
-        const user = prompt(`${a} + ${b} = ?`);
-        if (parseInt(user) === answer) {
-          win("Benar! Jawabannya " + answer);
-        } else {
-          lose("Salah! Jawabannya " + answer);
-        }
-      },
-
-      "🟢 Memory Match": () => {
-        const cards = ["A", "A", "B", "B"];
-        let shuffled = cards.sort(() => 0.5 - Math.random());
-        let picks = [];
-        for (let i = 0; i < 2; i++) {
-          picks.push(prompt(`Kartu ke-${i + 1} (1-4):`));
-        }
-        if (shuffled[picks[0] - 1] === shuffled[picks[1] - 1]) {
-          win("Cocok! 🎉");
-        } else {
-          lose("Tidak cocok 😢");
-        }
-      },
-
-      "🐍 Snake (Mini)": () => {
-        alert("Main Snake di versi ini masih coming soon 🐍");
-        lose("Belum tersedia");
-      }
-    };
-
-    function playGame(name) {
-      playSound('click');
-      games[name]();
-    }
-
-    function win(msg) {
-      alert(msg);
-      userData.points += 10;
-      if (userData.points >= userData.level * 50) {
-        userData.level++;
-        alert("Naik level ke " + userData.level + " 🎉");
-        playSound('win');
-      } else {
-        playSound('click');
-      }
-      saveUserData();
-      updateProfile();
-    }
-
-    function lose(msg) {
-      alert(msg);
-      playSound('lose');
-    }
-
-    function playSound(type) {
-      const sounds = {
-        click: document.getElementById("clickSound"),
-        win: document.getElementById("winSound"),
-        lose: document.getElementById("loseSound")
-      };
-      if (sounds[type]) {
-        sounds[type].currentTime = 0;
-        sounds[type].play();
-      }
-    }
+    let userLevel = 1;
+    let userPoints = 0;
+    let soundOn = true;
 
     function login() {
-      const name = document.getElementById("username").value;
-      if (!name) return alert("Masukkan username!");
-      const saved = localStorage.getItem(name);
-      if (saved) {
-        Object.assign(userData, JSON.parse(saved));
+      const username = document.getElementById('usernameInput').value.trim();
+      if (!username) {
+        alert('Please enter a username!');
+        return;
       }
-      userData.name = name;
-      document.getElementById("loginForm").style.display = "none";
-      document.getElementById("menu").style.display = "block";
-      document.getElementById("profile").style.display = "block";
-      showMenu();
-      updateProfile();
+      localStorage.setItem('bitbloop_username', username);
+      navigate('menu');
+      loadStats();
     }
 
-    function logout() {
-      localStorage.setItem(userData.name, JSON.stringify(userData));
-      location.reload();
+    function navigate(page) {
+      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+      document.getElementById(page).classList.add('active');
+      document.getElementById('gameArea').innerHTML = '';
     }
 
-    function updateProfile() {
-      document.getElementById("greeting").innerText = `Hi, ${userData.name}!`;
-      document.getElementById("stats").innerText = `Level: ${userData.level} | Poin: ${userData.points}`;
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('bitbloop_theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
     }
 
-    function saveUserData() {
-      if (userData.name)
-        localStorage.setItem(userData.name, JSON.stringify(userData));
+    function toggleSound() {
+      soundOn = !soundOn;
+      localStorage.setItem('bitbloop_sound', soundOn ? 'on' : 'off');
+      alert("Sound: " + (soundOn ? "ON" : "OFF"));
     }
 
-    function showMenu() {
-      const menu = document.getElementById("menu");
-      menu.innerHTML = "<h2>Pilih Game</h2>";
-      for (let game in games) {
-        const btn = document.createElement("button");
-        btn.innerText = game;
-        btn.onclick = () => playGame(game);
-        menu.appendChild(btn);
+    function playSound() {
+      if (soundOn) {
+        const audio = new Audio('https://www.soundjay.com/buttons/sounds/button-3.mp3');
+        audio.play();
       }
     }
 
-    window.onload = () => {
-      document.getElementById("loginForm").style.display = "block";
-    };
+    function completeGame(pointsEarned = 10) {
+      userPoints += pointsEarned;
+      userLevel += 1;
+      saveStats();
+      alert(`Game Complete! Level: ${userLevel}, Points: ${userPoints}`);
+      navigate('games');
+    }
+
+    function saveStats() {
+      localStorage.setItem('bitbloop_level', userLevel);
+      localStorage.setItem('bitbloop_points', userPoints);
+      document.getElementById('user-level').textContent = userLevel;
+      document.getElementById('user-points').textContent = userPoints;
+    }
+
+    function loadStats() {
+      userLevel = parseInt(localStorage.getItem('bitbloop_level') || '1');
+      userPoints = parseInt(localStorage.getItem('bitbloop_points') || '0');
+      document.getElementById('user-level').textContent = userLevel;
+      document.getElementById('user-points').textContent = userPoints;
+    }
+
+    function renderLeaderboard() {
+      const list = document.getElementById('leaderboardList');
+      const username = localStorage.getItem('bitbloop_username') || 'Anonymous';
+      list.innerHTML = `<li>${username} - Level ${userLevel}, Points ${userPoints}</li>`;
+    }
+
+    function loadTheme() {
+      const theme = localStorage.getItem('bitbloop_theme');
+      if (theme === 'dark') {
+        document.body.classList.add('dark-mode');
+      }
+    }
+
+    function loadSound() {
+      soundOn = localStorage.getItem('bitbloop_sound') !== 'off';
+    }
+
+    function loadUsername() {
+      const stored = localStorage.getItem('bitbloop_username');
+      if (stored) {
+        document.getElementById('usernameInput').value = stored;
+      }
+    }
+
+    function openGame(game) {
+      const area = document.getElementById('gameArea');
+      playSound();
+      if (game === 'memory') {
+        area.innerHTML = '<p>Match all pairs!</p>';
+        const cards = ['A', 'A', 'B', 'B', 'C', 'C'].sort(() => 0.5 - Math.random());
+        let selected = [], matched = [];
+        cards.forEach((val, i) => {
+          const div = document.createElement('div');
+          div.className = 'card';
+          div.dataset.value = val;
+          div.dataset.index = i;
+          div.onclick = function() {
+            if (selected.length < 2 && !div.classList.contains('matched')) {
+              div.textContent = val;
+              selected.push(div);
+              if (selected.length === 2) {
+                setTimeout(() => {
+                  if (selected[0].dataset.value === selected[1].dataset.value) {
+                    selected.forEach(el => {
+                      el.classList.add('matched');
+                      matched.push(el);
+                    });
+                    if (matched.length === cards.length) completeGame(15);
+                  } else {
+                    selected.forEach(el => el.textContent = '');
+                  }
+                  selected = [];
+                }, 500);
+              }
+            }
+          };
+          area.appendChild(div);
+        });
+      } else if (game === 'math') {
+        const a = Math.floor(Math.random() * 20), b = Math.floor(Math.random() * 20);
+        area.innerHTML = `<p>${a} + ${b} = ?</p>
+          <input id="answer" type="number">
+          <button onclick="checkMath(${a + b})">Submit</button>`;
+      } else if (game === 'tap') {
+        let count = 0;
+        area.innerHTML = `<p>Tap as fast as you can in 5 seconds!</p>
+          <p id="tapCount">0</p>
+          <button onclick="tap()">TAP</button>`;
+        setTimeout(() => {
+          completeGame(count);
+        }, 5000);
+        window.tap = () => {
+          count++;
+          document.getElementById('tapCount').textContent = count;
+        };
+      } else if (game === 'click') {
+        area.innerHTML = `<p>Click the box when it turns green</p>
+          <div id="box" style="width:100px;height:100px;background:red;margin:auto;"></div>`;
+        const box = document.getElementById('box');
+        setTimeout(() => {
+          box.style.background = 'green';
+          box.onclick = () => completeGame(12);
+        }, Math.random() * 3000 + 1000);
+      } else if (game === 'guess') {
+        const target = Math.floor(Math.random() * 10) + 1;
+        area.innerHTML = `<p>Guess a number between 1-10</p>
+          <input id="guessInput" type="number"><button onclick="checkGuess(${target})">Guess</button>`;
+      }
+    }
+
+    function checkMath(answer) {
+      const user = parseInt(document.getElementById('answer').value);
+      if (user === answer) completeGame(10);
+      else alert("Wrong!");
+    }
+
+    function checkGuess(target) {
+      const guess = parseInt(document.getElementById('guessInput').value);
+      if (guess === target) completeGame(11);
+      else alert("Try Again!");
+    }
+
+    window.addEventListener('load', () => {
+      loadUsername();
+      loadStats();
+      loadTheme();
+      loadSound();
+      renderLeaderboard();
+    });
   </script>
 </body>
 </html>
