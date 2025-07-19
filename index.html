@@ -6,478 +6,230 @@
   <title>BitBloop</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --primary-color: #87CEFA;
-      --accent-color: #4682B4;
-      --bg-color: #F0F8FF;
-      --text-color: #333;
-    }
-    [data-theme="dark"] {
-      --primary-color: #222;
-      --accent-color: #444;
-      --bg-color: #111;
-      --text-color: #eee;
-    }
-    [data-theme="soft-pink"] {
-      --primary-color: #FFB6C1;
-      --accent-color: #FF69B4;
-      --bg-color: #FFF0F5;
-      --text-color: #333;
-    }
-    [data-theme="light-brown"] {
-      --primary-color: #D2B48C;
-      --accent-color: #8B4513;
-      --bg-color: #FAEBD7;
-      --text-color: #333;
-    }
-    [data-theme="green-sage"] {
-      --primary-color: #9DC183;
-      --accent-color: #6B8E23;
-      --bg-color: #F5FFFA;
-      --text-color: #333;
-    }
-    [data-theme="lilac"] {
-      --primary-color: #C8A2C8;
-      --accent-color: #9370DB;
-      --bg-color: #F8F0FF;
-      --text-color: #333;
-    }
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
       font-family: 'Poppins', sans-serif;
-      font-weight: 400;
     }
     body {
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      min-height: 100vh;
-      text-align: center;
+      background-color: #f7f7f7;
+      color: #333;
     }
     header {
-      background-color: var(--primary-color);
-      color: white;
-      padding: 1rem;
-      font-size: 2rem;
-      font-weight: 500;
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .hamburger {
-      position: absolute;
-      top: 1rem;
-      left: 1rem;
-      font-size: 2rem;
-      cursor: pointer;
-      z-index: 1000;
-      user-select: none;
-    }
-    nav {
-      position: fixed;
-      top: 0;
-      left: -250px;
-      height: 100%;
-      width: 250px;
-      background-color: var(--primary-color);
-      transition: left 0.4s ease;
-      padding-top: 4rem;
-      z-index: 999;
-      text-align: left;
-    }
-    nav.show {
-      left: 0;
-    }
-    nav a {
-      display: block;
-      color: white;
-      padding: 1rem;
-      text-decoration: none;
-      font-size: 1.1rem;
-      border-bottom: 1px solid rgba(255,255,255,0.2);
-    }
-    nav h3 {
-      color: white;
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      opacity: 0.8;
-    }
-    nav .theme-picker,
-    nav .sound-toggle {
-      padding: 0 1rem;
-      margin-bottom: 1rem;
-    }
-    nav select,
-    nav button {
-      width: 100%;
-      padding: 0.5rem;
-      border: none;
-      border-radius: 5px;
-      font-size: 1rem;
-      cursor: pointer;
-      margin-top: 0.5rem;
-    }
-    section {
-      padding: 2rem;
-      display: none;
-      animation: fadeIn 0.5s ease-in-out;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    section.active {
-      display: block;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    h2 {
-      margin-bottom: 1rem;
-      font-weight: 500;
-    }
-    p {
-      margin-bottom: 1rem;
-      font-weight: 400;
-    }
-    .button {
-      background-color: var(--accent-color);
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
-      margin-top: 1rem;
-      transition: background-color 0.3s ease;
-    }
-    .button:hover {
-      background-color: var(--primary-color);
-    }
-    .game-list {
-      max-width: 300px;
-      margin: 2rem auto;
-    }
-    .game-list button {
-      width: 100%;
-      margin-bottom: 10px;
-    }
-    input {
-      padding: 8px;
-      width: 220px;
-      border-radius: 5px;
-      border: 1px solid var(--accent-color);
-      margin-top: 10px;
-      text-align: center;
-      font-size: 1rem;
-    }
-    ul {
-      list-style: none;
-      margin-top: 20px;
-      padding: 0;
-    }
-    li {
-      background-color: white;
-      border: 1px solid var(--accent-color);
-      border-radius: 5px;
-      padding: 8px;
-      margin-bottom: 5px;
+      background-color: #222;
+      color: #fff;
+      padding: 1rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    li button {
-      background-color: var(--accent-color);
+    header h1 {
+      font-size: 1.5rem;
+    }
+    nav button {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    #sideMenu {
+      width: 250px;
+      background-color: #444;
+      position: fixed;
+      top: 0;
+      left: -250px;
+      height: 100%;
+      padding: 1rem;
+      color: white;
+      transition: left 0.3s ease;
+    }
+    #sideMenu.open {
+      left: 0;
+    }
+    main {
+      padding: 2rem;
+    }
+    .screen {
+      display: none;
+    }
+    .screen.active {
+      display: block;
+    }
+    .btn {
+      padding: 0.5rem 1rem;
+      background-color: #007bff;
       color: white;
       border: none;
-      padding: 5px 10px;
-      border-radius: 5px;
+      border-radius: 4px;
       cursor: pointer;
-      font-size: 0.9rem;
+      margin-top: 1rem;
+    }
+    .game-options button {
+      display: block;
+      margin: 0.5rem 0;
     }
   </style>
 </head>
 <body>
   <header>
-    <div class="hamburger" id="hamburger">☰</div>
-    BitBloop
+    <h1>BitBloop</h1>
+    <nav>
+      <button onclick="toggleMenu()">☰</button>
+    </nav>
   </header>
-  <nav id="nav">
-    <a href="#" onclick="navigate('home')">🏠 Home</a>
-    <a href="#" onclick="navigate('games')">🎮 Games</a>
-    <a href="#" onclick="navigate('friends')">🤝 Friends</a>
-    <a href="#" onclick="navigate('account')">👤 Account</a>
-    <a href="#" onclick="navigate('leaderboard')">🏆 Leaderboard</a>
-    <h3>Theme</h3>
-    <div class="theme-picker">
-      <select id="themeSelect" onchange="changeTheme()">
-        <option value="">Default</option>
-        <option value="dark">Dark</option>
-        <option value="soft-pink">Soft Pink</option>
-        <option value="light-brown">Light Brown</option>
-        <option value="green-sage">Green Sage</option>
-        <option value="lilac">Lilac</option>
-      </select>
-    </div>
-    <h3>Sound</h3>
-    <div class="sound-toggle">
-      <button onclick="toggleSound()">Sound: <span id="soundStatus">On</span></button>
-    </div>
-  </nav>
 
-  <section id="home" class="active">
-    <h2>Welcome to BitBloop!</h2>
-    <p>Fun and fresh social minigames platform.</p>
-    <button class="button" onclick="navigate('games')">Play Now</button>
-  </section>
+  <div id="sideMenu">
+    <h2>Menu</h2>
+    <button class="btn" onclick="showScreen('home')">🏠 Home</button>
+    <button class="btn" onclick="showScreen('game-menu')">🎮 Game Menu</button>
+    <button class="btn" onclick="showScreen('leaderboard')">🏆 Leaderboard</button>
+  </div>
 
-  <section id="account">
-    <h2>My Account</h2>
-    <p>Personalize your profile.</p>
-    <input type="text" id="username" placeholder="Your Name">
-    <button class="button" onclick="saveUsername()">Save Name</button>
-    <button class="button" onclick="renameUsername()">Rename</button>
-    <p id="saved-name"></p>
-    <p>Level: <span id="user-level">1</span> | Points: <span id="user-points">0</span></p>
-  </section>
+  <main>
+    <section id="home" class="screen active">
+      <h2>Welcome to BitBloop!</h2>
+      <p>Let’s play and boost your brain!</p>
+      <button class="btn" onclick="showScreen('game-menu')">Play Now</button>
+    </section>
 
-  <section id="friends">
-    <h2>My Friends</h2>
-    <p>Add friends to challenge and play together!</p>
-    <input type="text" id="friendName" placeholder="Friend's Name">
-    <button class="button" onclick="addFriend()">Add Friend</button>
-    <ul id="friendsList"></ul>
-  </section>
+    <section id="game-menu" class="screen">
+      <h2>Choose a Game</h2>
+      <div class="game-options">
+        <button class="btn" onclick="startGuessGame()">🎯 Guess the Number</button>
+        <button class="btn" onclick="startRPSGame()">✊ Rock Paper Scissors</button>
+        <button class="btn" onclick="startQuickMath()">🧠 Quick Math</button>
+      </div>
+    </section>
 
-  <section id="games">
-    <h2>Select a Game</h2>
-    <div class="game-list">
-      <button class="button" onclick="showInstructions(1)">🎴 Memory Match</button>
-      <button class="button" onclick="showInstructions(2)">🔢 Guess the Number</button>
-      <button class="button" onclick="showInstructions(3)">🪨 Rock Paper Scissors</button>
-      <button class="button" onclick="showInstructions(4)">🧠 Quick Math</button>
-    </div>
-  </section>
+    <section id="guess-game" class="screen">
+      <h2>Guess the Number</h2>
+      <p>I'm thinking of a number between 1 and 10</p>
+      <input type="number" id="guessInput">
+      <button class="btn" onclick="checkGuess()">Guess</button>
+      <p id="guessMessage"></p>
+    </section>
 
-  <section id="instructions">
-    <h2 id="game-title">Game Instructions</h2>
-    <p id="game-instructions">Read the instructions before starting the game.</p>
-    <button class="button" onclick="startGame()">Start Game</button>
-  </section>
+    <section id="rps-game" class="screen">
+      <h2>Rock Paper Scissors</h2>
+      <button class="btn" onclick="playRPS('rock')">Rock</button>
+      <button class="btn" onclick="playRPS('paper')">Paper</button>
+      <button class="btn" onclick="playRPS('scissors')">Scissors</button>
+      <p id="rpsResult"></p>
+    </section>
 
-  <section id="gameplay">
-    <h2 id="playing-title">Now Playing:</h2>
-    <div id="game-container"><p id="playing-instructions">Loading game...</p></div>
-    <button class="button" onclick="navigate('games')">Back to Game Menu</button>
-  </section>
+    <section id="quick-math" class="screen">
+      <h2>Quick Math</h2>
+      <p id="mathProblem"></p>
+      <input type="number" id="mathAnswer">
+      <button class="btn" onclick="submitMath()">Submit</button>
+      <p id="mathFeedback"></p>
+    </section>
 
-  <section id="leaderboard">
-    <h2>Leaderboard</h2>
-    <ul id="leaderboardList"></ul>
-  </section>
+    <section id="leaderboard" class="screen">
+      <h2>Leaderboard</h2>
+      <ul id="leaderboardList"></ul>
+    </section>
+  </main>
 
   <script>
-    const sections = document.querySelectorAll('section');
-    const nav = document.getElementById('nav');
-    const hamburger = document.getElementById('hamburger');
-    let currentTheme = '';
-    let soundEnabled = true;
-    let userLevel = 1;
-    let userPoints = 0;
+    let currentScreen = 'home';
+    let correctGuess;
+    let mathCorrect;
+    let score = 0;
 
-    hamburger.addEventListener('click', () => {
-      nav.classList.toggle('show');
-    });
-
-    function navigate(page) {
-      sections.forEach(s => s.classList.remove('active'));
-      document.getElementById(page).classList.add('active');
-      nav.classList.remove('show');
-      if (page === 'leaderboard') renderLeaderboard();
+    function toggleMenu() {
+      document.getElementById('sideMenu').classList.toggle('open');
     }
 
-    function changeTheme() {
-      const theme = document.getElementById('themeSelect').value;
-      document.body.setAttribute('data-theme', theme);
-      localStorage.setItem('bitbloop_theme', theme);
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+      currentScreen = screenId;
     }
 
-    function loadTheme() {
-      const theme = localStorage.getItem('bitbloop_theme') || '';
-      document.getElementById('themeSelect').value = theme;
-      document.body.setAttribute('data-theme', theme);
+    function startGuessGame() {
+      correctGuess = Math.floor(Math.random() * 10) + 1;
+      showScreen('guess-game');
+      document.getElementById('guessInput').value = '';
+      document.getElementById('guessMessage').textContent = '';
     }
 
-    function toggleSound() {
-      soundEnabled = !soundEnabled;
-      document.getElementById('soundStatus').textContent = soundEnabled ? 'On' : 'Off';
-      localStorage.setItem('bitbloop_sound', soundEnabled ? '1' : '0');
-    }
-
-    function loadSound() {
-      soundEnabled = localStorage.getItem('bitbloop_sound') !== '0';
-      document.getElementById('soundStatus').textContent = soundEnabled ? 'On' : 'Off';
-    }
-
-    function saveUsername() {
-      const username = document.getElementById('username').value.trim();
-      if (username) {
-        localStorage.setItem('bitbloop_username', username);
-        document.getElementById('saved-name').textContent = `Hello, ${username}!`;
+    function checkGuess() {
+      const input = parseInt(document.getElementById('guessInput').value);
+      const msg = document.getElementById('guessMessage');
+      if (input === correctGuess) {
+        msg.textContent = 'Correct! 🎉';
+        score += 10;
+      } else {
+        msg.textContent = 'Wrong! Try again.';
       }
     }
 
-    function renameUsername() {
-      document.getElementById('username').value = '';
-      document.getElementById('saved-name').textContent = 'Please enter your new name!';
+    function startRPSGame() {
+      showScreen('rps-game');
+      document.getElementById('rpsResult').textContent = '';
     }
 
-    function loadUsername() {
-      const saved = localStorage.getItem('bitbloop_username');
-      if (saved) {
-        document.getElementById('saved-name').textContent = `Hello, ${saved}!`;
-        document.getElementById('username').value = saved;
+    function playRPS(player) {
+      const options = ['rock', 'paper', 'scissors'];
+      const ai = options[Math.floor(Math.random() * 3)];
+      const result = document.getElementById('rpsResult');
+      if (player === ai) {
+        result.textContent = `Draw! Both chose ${ai}`;
+      } else if ((player === 'rock' && ai === 'scissors') ||
+                 (player === 'scissors' && ai === 'paper') ||
+                 (player === 'paper' && ai === 'rock')) {
+        result.textContent = `You win! AI chose ${ai}`;
+        score += 10;
+      } else {
+        result.textContent = `You lose! AI chose ${ai}`;
       }
     }
 
-    function addFriend() {
-      const friendName = document.getElementById('friendName').value.trim();
-      if (!friendName) return;
-      let friends = JSON.parse(localStorage.getItem('bitbloop_friends') || '[]');
-      friends.push(friendName);
-      localStorage.setItem('bitbloop_friends', JSON.stringify(friends));
-      document.getElementById('friendName').value = '';
-      loadFriends();
+    function startQuickMath() {
+      const a = Math.floor(Math.random() * 10);
+      const b = Math.floor(Math.random() * 10);
+      mathCorrect = a + b;
+      document.getElementById('mathProblem').textContent = `${a} + ${b} = ?`;
+      document.getElementById('mathAnswer').value = '';
+      document.getElementById('mathFeedback').textContent = '';
+      showScreen('quick-math');
     }
 
-    function loadFriends() {
-      let friends = JSON.parse(localStorage.getItem('bitbloop_friends') || '[]');
-      const list = document.getElementById('friendsList');
-      list.innerHTML = '';
-      friends.forEach((f, i) => {
+    function submitMath() {
+      const input = parseInt(document.getElementById('mathAnswer').value);
+      const feedback = document.getElementById('mathFeedback');
+      if (input === mathCorrect) {
+        feedback.textContent = 'Correct! 🎉';
+        score += 10;
+      } else {
+        feedback.textContent = 'Wrong! Try again.';
+      }
+    }
+
+    function updateLeaderboard() {
+      const board = document.getElementById('leaderboardList');
+      board.innerHTML = '';
+      const scores = [
+        { name: 'You', points: score },
+        { name: 'Alice', points: 80 },
+        { name: 'Bob', points: 60 },
+      ];
+      scores.sort((a, b) => b.points - a.points);
+      scores.forEach(s => {
         const li = document.createElement('li');
-        li.textContent = f;
-        const delBtn = document.createElement('button');
-        delBtn.textContent = 'Delete';
-        delBtn.onclick = () => deleteFriend(i);
-        li.appendChild(delBtn);
-        list.appendChild(li);
+        li.textContent = `${s.name}: ${s.points} pts`;
+        board.appendChild(li);
       });
     }
 
-    function deleteFriend(index) {
-      let friends = JSON.parse(localStorage.getItem('bitbloop_friends') || '[]');
-      friends.splice(index, 1);
-      localStorage.setItem('bitbloop_friends', JSON.stringify(friends));
-      loadFriends();
-    }
-
-    const games = {
-      1: { title: 'Memory Match', instructions: 'Flip cards and match the pairs.' },
-      2: { title: 'Guess the Number', instructions: 'Guess a number between 1 and 100.' },
-      3: { title: 'Rock Paper Scissors', instructions: 'Choose rock, paper, or scissors.' },
-      4: { title: 'Quick Math', instructions: 'Solve as many math problems as you can in 60 seconds.' }
-    };
-    let selectedGame = null;
-
-    function showInstructions(id) {
-      selectedGame = games[id];
-      document.getElementById('game-title').textContent = selectedGame.title;
-      document.getElementById('game-instructions').textContent = selectedGame.instructions;
-      navigate('instructions');
-    }
-
-    function startGame() {
-      if (!selectedGame) return;
-      document.getElementById('playing-title').textContent = `Now Playing: ${selectedGame.title}`;
-      const container = document.getElementById('game-container');
-
-      switch (selectedGame.title) {
-        case 'Guess the Number':
-          randomNumber = Math.floor(Math.random() * 100) + 1;
-          container.innerHTML = `
-            <p>Guess a number between 1 and 100:</p>
-            <input type="number" id="guessInput" placeholder="Enter guess" />
-            <button class="button" onclick="submitGuess()">Submit</button>
-            <p id="guessFeedback"></p>
-          `;
-          break;
-        case 'Rock Paper Scissors':
-          container.innerHTML = `
-            <p>Choose:</p>
-            <button onclick="rpsPlay('rock')">Rock</button>
-            <button onclick="rpsPlay('paper')">Paper</button>
-            <button onclick="rpsPlay('scissors')">Scissors</button>
-            <p id="rpsResult"></p>
-          `;
-          break;
-        case 'Quick Math':
-          startQuickMath();
-          break;
-        default:
-          container.innerHTML = `<p>Game not implemented yet.</p>`;
+    document.getElementById('sideMenu').addEventListener('click', e => {
+      if (e.target.matches('button')) {
+        updateLeaderboard();
       }
-
-      navigate('gameplay');
-    }
-
-    let randomNumber = 0;
-    function submitGuess() {
-      const guess = parseInt(document.getElementById('guessInput').value);
-      const feedback = document.getElementById('guessFeedback');
-      if (guess === randomNumber) {
-        feedback.textContent = '🎉 Correct!';
-        finishGame();
-      } else if (guess < randomNumber) {
-        feedback.textContent = 'Too low!';
-      } else {
-        feedback.textContent = 'Too high!';
-      }
-    }
-
-    function rpsPlay(choice) {
-      const choices = ['rock', 'paper', 'scissors'];
-      const cpu = choices[Math.floor(Math.random() * 3)];
-      let result = '';
-      if (choice === cpu) result = \"It's a tie!\";
-      else if ((choice === 'rock' && cpu === 'scissors') || (choice === 'paper' && cpu === 'rock') || (choice === 'scissors' && cpu === 'paper')) {
-        result = '🎉 You win!';
-        finishGame();
-      } else {
-        result = '😢 You lose!';
-      }
-      document.getElementById('rpsResult').textContent = `CPU chose ${cpu}. ${result}`;
-    }
-
-    let quickScore = 0, quickTime = 60, quickTimer;
-    function startQuickMath() {
-      quickScore = 0;
-      quickTime = 60;
-      const container = document.getElementById('game-container');
-      container.innerHTML = `
-        <p id="quick-problem"></p>
-        <input type="number" id="quick-answer" placeholder="Answer" />
-        <button onclick="submitQuickAnswer()">Submit</button>
-        <p>Score: <span id="quick-score">0</span></p>
-        <p>Time: <span id="quick-time">60</span>s</p>
-      `;
-      generateQuickProblem();
-      quickTimer = setInterval(() => {
-        quickTime--;
-        document.getElementById('quick-time').textContent = quickTime;
-        if (quickTime <= 0) {
-          clearInterval(quickTimer);
-          finishGame();
-        }
-      }, 1000);
-    }
-
-    function generateQuickProblem() {
-      const a = Math.floor(Math.random() * 20);
-      const b = Math.floor(Math.random() * 20);
-      document.getElementById('quick-problem').textContent = `${a} + ${b} = ?`;
-      document.getElementById('quick-answer').dataset.correct = a + b;
-    }
-
-    function submitQuickAnswer()
+    });
+  </script>
+</body>
+</html>
