@@ -393,6 +393,7 @@
       if (selectedGame) {
         document.getElementById('playing-title').textContent = `Now Playing: ${selectedGame.title}`;
         const container = document.getElementById('game-container');
+        // Ensure this line uses backticks for the template literal
         container.innerHTML = `<p>${selectedGame.instructions}</p><button class="button" onclick="finishGame()">Finish</button>`;
       } else {
         document.getElementById('playing-title').textContent = 'Now Playing';
@@ -403,7 +404,7 @@
 
     function finishGame() {
       userPoints += 10;
-      const pointsToNextLevel = 50;
+      const pointsToNextLevel = 50; // Define the points needed for next level
       if (userPoints >= pointsToNextLevel) {
         userLevel++;
         userPoints = userPoints % pointsToNextLevel; // Carry over remainder points
@@ -431,6 +432,7 @@
     function renderLeaderboard() {
       const list = document.getElementById('leaderboardList');
       const username = localStorage.getItem('bitbloop_username') || 'Anonymous';
+      // Ensure this line uses backticks for the template literal
       list.innerHTML = `<li>${username} - Level ${userLevel}, Points ${userPoints}</li>`;
     }
 
