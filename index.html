@@ -225,6 +225,7 @@
       <button onclick="toggleSound()">Sound: <span id="soundStatus">On</span></button>
     </div>
   </nav>
+
   <section id="home" class="active">
     <h2>Welcome to BitBloop!</h2>
     <p>Fun and fresh social minigames platform.</p>
@@ -267,9 +268,7 @@
 
   <section id="gameplay">
     <h2 id="playing-title">Now Playing:</h2>
-    <div id="game-container">
-      <p id="playing-instructions">Loading game...</p>
-    </div>
+    <div id="game-container"><p id="playing-instructions">Loading game...</p></div>
     <button class="button" onclick="navigate('games')">Back to Game Menu</button>
   </section>
 
@@ -298,30 +297,29 @@
       if (page === 'leaderboard') renderLeaderboard();
     }
 
-    // THEME
     function changeTheme() {
       const theme = document.getElementById('themeSelect').value;
       document.body.setAttribute('data-theme', theme);
       localStorage.setItem('bitbloop_theme', theme);
     }
+
     function loadTheme() {
       const theme = localStorage.getItem('bitbloop_theme') || '';
       document.getElementById('themeSelect').value = theme;
       document.body.setAttribute('data-theme', theme);
     }
 
-    // SOUND
     function toggleSound() {
       soundEnabled = !soundEnabled;
       document.getElementById('soundStatus').textContent = soundEnabled ? 'On' : 'Off';
       localStorage.setItem('bitbloop_sound', soundEnabled ? '1' : '0');
     }
+
     function loadSound() {
       soundEnabled = localStorage.getItem('bitbloop_sound') !== '0';
       document.getElementById('soundStatus').textContent = soundEnabled ? 'On' : 'Off';
     }
 
-    // USERNAME
     function saveUsername() {
       const username = document.getElementById('username').value.trim();
       if (username) {
@@ -329,6 +327,7 @@
         document.getElementById('saved-name').textContent = `Hello, ${username}!`;
       }
     }
+
     function renameUsername() {
       document.getElementById('username').value = '';
       document.getElementById('saved-name').textContent = 'Please enter your new name!';
@@ -342,7 +341,6 @@
       }
     }
 
-    // FRIENDS
     function addFriend() {
       const friendName = document.getElementById('friendName').value.trim();
       if (!friendName) return;
@@ -352,6 +350,7 @@
       document.getElementById('friendName').value = '';
       loadFriends();
     }
+
     function loadFriends() {
       let friends = JSON.parse(localStorage.getItem('bitbloop_friends') || '[]');
       const list = document.getElementById('friendsList');
@@ -366,6 +365,7 @@
         list.appendChild(li);
       });
     }
+
     function deleteFriend(index) {
       let friends = JSON.parse(localStorage.getItem('bitbloop_friends') || '[]');
       friends.splice(index, 1);
@@ -373,7 +373,6 @@
       loadFriends();
     }
 
-    // GAMES & LEVEL/POINTS
     const games = {
       1: { title: 'Memory Match', instructions: 'Flip cards and match the pairs.' },
       2: { title: 'Guess the Number', instructions: 'Guess a number between 1 and 100.' },
@@ -390,56 +389,95 @@
     }
 
     function startGame() {
-      if (selectedGame) {
-        document.getElementById('playing-title').textContent = `Now Playing: ${selectedGame.title}`;
-        const container = document.getElementById('game-container');
-        container.innerHTML = `<p>${selectedGame.instructions}</p><button class="button" onclick="finishGame()">Finish</button>`;
-      } else {
-        document.getElementById('playing-title').textContent = 'Now Playing';
-        document.getElementById('game-container').innerHTML = '<p>Loading game...</p>';
+      if (!selectedGame) return;
+      document.getElementById('playing-title').textContent = `Now Playing: ${selectedGame.title}`;
+      const container = document.getElementById('game-container');
+
+      switch (selectedGame.title) {
+        case 'Guess the Number':
+          randomNumber = Math.floor(Math.random() * 100) + 1;
+          container.innerHTML = `
+            <p>Guess a number between 1 and 100:</p>
+            <input type="number" id="guessInput" placeholder="Enter guess" />
+            <button class="button" onclick="submitGuess()">Submit</button>
+            <p id="guessFeedback"></p>
+          `;
+          break;
+        case 'Rock Paper Scissors':
+          container.innerHTML = `
+            <p>Choose:</p>
+            <button onclick="rpsPlay('rock')">Rock</button>
+            <button onclick="rpsPlay('paper')">Paper</button>
+            <button onclick="rpsPlay('scissors')">Scissors</button>
+            <p id="rpsResult"></p>
+          `;
+          break;
+        case 'Quick Math':
+          startQuickMath();
+          break;
+        default:
+          container.innerHTML = `<p>Game not implemented yet.</p>`;
       }
+
       navigate('gameplay');
     }
 
-    function finishGame() {
-      userPoints += 10;
-      if (userPoints >= 50) {
-        userLevel++;
-        userPoints = 0;
+    let randomNumber = 0;
+    function submitGuess() {
+      const guess = parseInt(document.getElementById('guessInput').value);
+      const feedback = document.getElementById('guessFeedback');
+      if (guess === randomNumber) {
+        feedback.textContent = '🎉 Correct!';
+        finishGame();
+      } else if (guess < randomNumber) {
+        feedback.textContent = 'Too low!';
+      } else {
+        feedback.textContent = 'Too high!';
       }
-      saveStats();
-      alert(`Game Complete! Level: ${userLevel}, Points: ${userPoints}`);
-      navigate('games');
     }
 
-    function saveStats() {
-      localStorage.setItem('bitbloop_level', userLevel);
-      localStorage.setItem('bitbloop_points', userPoints);
-      document.getElementById('user-level').textContent = userLevel;
-      document.getElementById('user-points').textContent = userPoints;
+    function rpsPlay(choice) {
+      const choices = ['rock', 'paper', 'scissors'];
+      const cpu = choices[Math.floor(Math.random() * 3)];
+      let result = '';
+      if (choice === cpu) result = \"It's a tie!\";
+      else if ((choice === 'rock' && cpu === 'scissors') || (choice === 'paper' && cpu === 'rock') || (choice === 'scissors' && cpu === 'paper')) {
+        result = '🎉 You win!';
+        finishGame();
+      } else {
+        result = '😢 You lose!';
+      }
+      document.getElementById('rpsResult').textContent = `CPU chose ${cpu}. ${result}`;
     }
 
-    function loadStats() {
-      userLevel = parseInt(localStorage.getItem('bitbloop_level') || '1');
-      userPoints = parseInt(localStorage.getItem('bitbloop_points') || '0');
-      document.getElementById('user-level').textContent = userLevel;
-      document.getElementById('user-points').textContent = userPoints;
+    let quickScore = 0, quickTime = 60, quickTimer;
+    function startQuickMath() {
+      quickScore = 0;
+      quickTime = 60;
+      const container = document.getElementById('game-container');
+      container.innerHTML = `
+        <p id="quick-problem"></p>
+        <input type="number" id="quick-answer" placeholder="Answer" />
+        <button onclick="submitQuickAnswer()">Submit</button>
+        <p>Score: <span id="quick-score">0</span></p>
+        <p>Time: <span id="quick-time">60</span>s</p>
+      `;
+      generateQuickProblem();
+      quickTimer = setInterval(() => {
+        quickTime--;
+        document.getElementById('quick-time').textContent = quickTime;
+        if (quickTime <= 0) {
+          clearInterval(quickTimer);
+          finishGame();
+        }
+      }, 1000);
     }
 
-    // LEADERBOARD
-    function renderLeaderboard() {
-      const list = document.getElementById('leaderboardList');
-      const username = localStorage.getItem('bitbloop_username') || 'Anonymous';
-      list.innerHTML = `<li>${username} - Level ${userLevel}, Points ${userPoints}</li>`;
+    function generateQuickProblem() {
+      const a = Math.floor(Math.random() * 20);
+      const b = Math.floor(Math.random() * 20);
+      document.getElementById('quick-problem').textContent = `${a} + ${b} = ?`;
+      document.getElementById('quick-answer').dataset.correct = a + b;
     }
 
-    window.addEventListener('load', () => {
-      loadUsername();
-      loadFriends();
-      loadTheme();
-      loadSound();
-      loadStats();
-    });
-  </script>
-</body>
-</html>
+    function submitQuickAnswer()
