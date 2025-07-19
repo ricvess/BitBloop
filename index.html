@@ -2,234 +2,212 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BitBloop</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BitBloop Ultimate</title>
   <style>
-    * {
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #111, #222);
+      color: white;
+      text-align: center;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-      font-family: 'Poppins', sans-serif;
     }
-    body {
-      background-color: #f7f7f7;
-      color: #333;
-    }
-    header {
-      background-color: #222;
-      color: #fff;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    header h1 {
-      font-size: 1.5rem;
-    }
-    nav button {
-      background: none;
+    h1 { font-size: 2.2em; margin: 20px 0; }
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+      margin: 10px;
       border: none;
-      color: #fff;
-      font-size: 1.5rem;
+      border-radius: 8px;
       cursor: pointer;
+      background-color: #00bcd4;
+      color: #fff;
     }
-    #sideMenu {
-      width: 250px;
-      background-color: #444;
-      position: fixed;
-      top: 0;
-      left: -250px;
-      height: 100%;
-      padding: 1rem;
-      color: white;
-      transition: left 0.3s ease;
+    button:hover {
+      background-color: #008c9e;
     }
-    #sideMenu.open {
-      left: 0;
-    }
-    main {
-      padding: 2rem;
-    }
-    .screen {
+    #loginForm, #gameArea, #menu, #profile {
       display: none;
+      margin-top: 20px;
     }
-    .screen.active {
+    .game-list button {
       display: block;
+      width: 200px;
+      margin: 10px auto;
     }
-    .btn {
-      padding: 0.5rem 1rem;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 1rem;
-    }
-    .game-options button {
-      display: block;
-      margin: 0.5rem 0;
-    }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>BitBloop</h1>
-    <nav>
-      <button onclick="toggleMenu()">☰</button>
-    </nav>
-  </header>
+  <h1>🎮 BitBloop Ultimate</h1>
 
-  <div id="sideMenu">
-    <h2>Menu</h2>
-    <button class="btn" onclick="showScreen('home')">🏠 Home</button>
-    <button class="btn" onclick="showScreen('game-menu')">🎮 Game Menu</button>
-    <button class="btn" onclick="showScreen('leaderboard')">🏆 Leaderboard</button>
+  <div id="loginForm">
+    <input type="text" id="username" placeholder="Enter username" />
+    <br><br>
+    <button onclick="login()">Login</button>
   </div>
 
-  <main>
-    <section id="home" class="screen active">
-      <h2>Welcome to BitBloop!</h2>
-      <p>Let’s play and boost your brain!</p>
-      <button class="btn" onclick="showScreen('game-menu')">Play Now</button>
-    </section>
+  <div id="profile">
+    <p id="greeting"></p>
+    <p id="stats"></p>
+    <button onclick="logout()">Logout</button>
+  </div>
 
-    <section id="game-menu" class="screen">
-      <h2>Choose a Game</h2>
-      <div class="game-options">
-        <button class="btn" onclick="startGuessGame()">🎯 Guess the Number</button>
-        <button class="btn" onclick="startRPSGame()">✊ Rock Paper Scissors</button>
-        <button class="btn" onclick="startQuickMath()">🧠 Quick Math</button>
-      </div>
-    </section>
+  <div id="menu" class="game-list"></div>
 
-    <section id="guess-game" class="screen">
-      <h2>Guess the Number</h2>
-      <p>I'm thinking of a number between 1 and 10</p>
-      <input type="number" id="guessInput">
-      <button class="btn" onclick="checkGuess()">Guess</button>
-      <p id="guessMessage"></p>
-    </section>
+  <div id="gameArea"></div>
 
-    <section id="rps-game" class="screen">
-      <h2>Rock Paper Scissors</h2>
-      <button class="btn" onclick="playRPS('rock')">Rock</button>
-      <button class="btn" onclick="playRPS('paper')">Paper</button>
-      <button class="btn" onclick="playRPS('scissors')">Scissors</button>
-      <p id="rpsResult"></p>
-    </section>
-
-    <section id="quick-math" class="screen">
-      <h2>Quick Math</h2>
-      <p id="mathProblem"></p>
-      <input type="number" id="mathAnswer">
-      <button class="btn" onclick="submitMath()">Submit</button>
-      <p id="mathFeedback"></p>
-    </section>
-
-    <section id="leaderboard" class="screen">
-      <h2>Leaderboard</h2>
-      <ul id="leaderboardList"></ul>
-    </section>
-  </main>
+  <audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
+  <audio id="winSound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"></audio>
+  <audio id="loseSound" src="https://www.soundjay.com/misc/sounds/fail-buzzer-01.mp3"></audio>
 
   <script>
-    let currentScreen = 'home';
-    let correctGuess;
-    let mathCorrect;
-    let score = 0;
+    const userData = {
+      points: 0,
+      level: 1
+    };
 
-    function toggleMenu() {
-      document.getElementById('sideMenu').classList.toggle('open');
+    const games = {
+      "🎯 Tebak Angka": () => {
+        const num = Math.floor(Math.random() * 10) + 1;
+        let guess = prompt("Tebak angka 1-10:");
+        if (parseInt(guess) === num) {
+          win("Benar! 🎉 Angkanya " + num);
+        } else {
+          lose("Salah! 😢 Angkanya " + num);
+        }
+      },
+
+      "✊ Batu Gunting Kertas": () => {
+        const choices = ["Batu", "Gunting", "Kertas"];
+        const user = prompt("Pilih: Batu, Gunting, atau Kertas?");
+        const bot = choices[Math.floor(Math.random() * 3)];
+        if (!user) return;
+        if (user === bot) return alert("Seri! Bot juga pilih " + bot);
+        if (
+          (user === "Batu" && bot === "Gunting") ||
+          (user === "Gunting" && bot === "Kertas") ||
+          (user === "Kertas" && bot === "Batu")
+        ) {
+          win("Menang! Bot pilih " + bot);
+        } else {
+          lose("Kalah! Bot pilih " + bot);
+        }
+      },
+
+      "🧠 Quick Math": () => {
+        const a = Math.floor(Math.random() * 10);
+        const b = Math.floor(Math.random() * 10);
+        const answer = a + b;
+        const user = prompt(`${a} + ${b} = ?`);
+        if (parseInt(user) === answer) {
+          win("Benar! Jawabannya " + answer);
+        } else {
+          lose("Salah! Jawabannya " + answer);
+        }
+      },
+
+      "🟢 Memory Match": () => {
+        const cards = ["A", "A", "B", "B"];
+        let shuffled = cards.sort(() => 0.5 - Math.random());
+        let picks = [];
+        for (let i = 0; i < 2; i++) {
+          picks.push(prompt(`Kartu ke-${i + 1} (1-4):`));
+        }
+        if (shuffled[picks[0] - 1] === shuffled[picks[1] - 1]) {
+          win("Cocok! 🎉");
+        } else {
+          lose("Tidak cocok 😢");
+        }
+      },
+
+      "🐍 Snake (Mini)": () => {
+        alert("Main Snake di versi ini masih coming soon 🐍");
+        lose("Belum tersedia");
+      }
+    };
+
+    function playGame(name) {
+      playSound('click');
+      games[name]();
     }
 
-    function showScreen(screenId) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(screenId).classList.add('active');
-      currentScreen = screenId;
-    }
-
-    function startGuessGame() {
-      correctGuess = Math.floor(Math.random() * 10) + 1;
-      showScreen('guess-game');
-      document.getElementById('guessInput').value = '';
-      document.getElementById('guessMessage').textContent = '';
-    }
-
-    function checkGuess() {
-      const input = parseInt(document.getElementById('guessInput').value);
-      const msg = document.getElementById('guessMessage');
-      if (input === correctGuess) {
-        msg.textContent = 'Correct! 🎉';
-        score += 10;
+    function win(msg) {
+      alert(msg);
+      userData.points += 10;
+      if (userData.points >= userData.level * 50) {
+        userData.level++;
+        alert("Naik level ke " + userData.level + " 🎉");
+        playSound('win');
       } else {
-        msg.textContent = 'Wrong! Try again.';
+        playSound('click');
+      }
+      saveUserData();
+      updateProfile();
+    }
+
+    function lose(msg) {
+      alert(msg);
+      playSound('lose');
+    }
+
+    function playSound(type) {
+      const sounds = {
+        click: document.getElementById("clickSound"),
+        win: document.getElementById("winSound"),
+        lose: document.getElementById("loseSound")
+      };
+      if (sounds[type]) {
+        sounds[type].currentTime = 0;
+        sounds[type].play();
       }
     }
 
-    function startRPSGame() {
-      showScreen('rps-game');
-      document.getElementById('rpsResult').textContent = '';
+    function login() {
+      const name = document.getElementById("username").value;
+      if (!name) return alert("Masukkan username!");
+      const saved = localStorage.getItem(name);
+      if (saved) {
+        Object.assign(userData, JSON.parse(saved));
+      }
+      userData.name = name;
+      document.getElementById("loginForm").style.display = "none";
+      document.getElementById("menu").style.display = "block";
+      document.getElementById("profile").style.display = "block";
+      showMenu();
+      updateProfile();
     }
 
-    function playRPS(player) {
-      const options = ['rock', 'paper', 'scissors'];
-      const ai = options[Math.floor(Math.random() * 3)];
-      const result = document.getElementById('rpsResult');
-      if (player === ai) {
-        result.textContent = `Draw! Both chose ${ai}`;
-      } else if ((player === 'rock' && ai === 'scissors') ||
-                 (player === 'scissors' && ai === 'paper') ||
-                 (player === 'paper' && ai === 'rock')) {
-        result.textContent = `You win! AI chose ${ai}`;
-        score += 10;
-      } else {
-        result.textContent = `You lose! AI chose ${ai}`;
+    function logout() {
+      localStorage.setItem(userData.name, JSON.stringify(userData));
+      location.reload();
+    }
+
+    function updateProfile() {
+      document.getElementById("greeting").innerText = `Hi, ${userData.name}!`;
+      document.getElementById("stats").innerText = `Level: ${userData.level} | Poin: ${userData.points}`;
+    }
+
+    function saveUserData() {
+      if (userData.name)
+        localStorage.setItem(userData.name, JSON.stringify(userData));
+    }
+
+    function showMenu() {
+      const menu = document.getElementById("menu");
+      menu.innerHTML = "<h2>Pilih Game</h2>";
+      for (let game in games) {
+        const btn = document.createElement("button");
+        btn.innerText = game;
+        btn.onclick = () => playGame(game);
+        menu.appendChild(btn);
       }
     }
 
-    function startQuickMath() {
-      const a = Math.floor(Math.random() * 10);
-      const b = Math.floor(Math.random() * 10);
-      mathCorrect = a + b;
-      document.getElementById('mathProblem').textContent = `${a} + ${b} = ?`;
-      document.getElementById('mathAnswer').value = '';
-      document.getElementById('mathFeedback').textContent = '';
-      showScreen('quick-math');
-    }
-
-    function submitMath() {
-      const input = parseInt(document.getElementById('mathAnswer').value);
-      const feedback = document.getElementById('mathFeedback');
-      if (input === mathCorrect) {
-        feedback.textContent = 'Correct! 🎉';
-        score += 10;
-      } else {
-        feedback.textContent = 'Wrong! Try again.';
-      }
-    }
-
-    function updateLeaderboard() {
-      const board = document.getElementById('leaderboardList');
-      board.innerHTML = '';
-      const scores = [
-        { name: 'You', points: score },
-        { name: 'Alice', points: 80 },
-        { name: 'Bob', points: 60 },
-      ];
-      scores.sort((a, b) => b.points - a.points);
-      scores.forEach(s => {
-        const li = document.createElement('li');
-        li.textContent = `${s.name}: ${s.points} pts`;
-        board.appendChild(li);
-      });
-    }
-
-    document.getElementById('sideMenu').addEventListener('click', e => {
-      if (e.target.matches('button')) {
-        updateLeaderboard();
-      }
-    });
+    window.onload = () => {
+      document.getElementById("loginForm").style.display = "block";
+    };
   </script>
 </body>
 </html>
