@@ -5,164 +5,155 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>BitBloop</title>
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f5f5f5;
-      color: #333;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-      transition: background 0.3s, color 0.3s;
-    }
-    .dark-mode {
-      background-color: #111;
-      color: #f5f5f5;
+      background: var(--bg, #f0f0f0);
+      color: var(--text, #333);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
     header, footer {
       padding: 1em;
-      background-color: #2e86de;
+      background: var(--header-bg, #222);
       color: white;
+      text-align: center;
+    }
+    nav button {
+      margin: 0.5em;
+      padding: 0.5em 1em;
+      font-size: 1em;
     }
     main {
-      padding: 2em;
+      flex: 1;
+      padding: 1em;
     }
-    section {
-      display: none;
+    .hidden { display: none; }
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 1em;
     }
-    section.active {
-      display: block;
-    }
-    button {
-      margin: 1em;
-      padding: 0.8em 2em;
-      font-size: 1em;
+    .tile {
+      background: #ddd;
+      padding: 1em;
+      text-align: center;
+      font-size: 1.5em;
       cursor: pointer;
-      border: none;
-      border-radius: 5px;
-      background: #2e86de;
-      color: white;
-      transition: background 0.3s;
-    }
-    button:hover {
-      background: #1b4f72;
-    }
-    input[type="text"] {
-      padding: 0.5em;
-      font-size: 1em;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    .game-container {
-      margin-top: 20px;
-    }
-    .card {
-      width: 60px;
-      height: 60px;
-      display: inline-block;
-      background: #ccc;
-      margin: 5px;
-      font-size: 24px;
-      line-height: 60px;
-      cursor: pointer;
-      border-radius: 5px;
     }
   </style>
 </head>
 <body>
   <header>
     <h1>BitBloop</h1>
-    <p>Level: <span id="user-level">1</span> | Points: <span id="user-points">0</span></p>
+    <div>
+      <span>Level: <span id="user-level">1</span></span> |
+      <span>Points: <span id="user-points">0</span></span>
+    </div>
   </header>
 
+  <nav>
+    <button onclick="navigate('login')">Login</button>
+    <button onclick="navigate('menu')">Menu</button>
+    <button onclick="navigate('games')">Games</button>
+    <button onclick="navigate('leaderboard')">Leaderboard</button>
+    <button onclick="navigate('settings')">Settings</button>
+  </nav>
+
   <main>
-    <!-- Login Section -->
-    <section id="login" class="active">
-      <h2>Welcome to BitBloop</h2>
-      <p>Enter your username to start</p>
-      <input type="text" id="usernameInput" placeholder="Enter username" />
-      <br />
-      <button onclick="login()">Enter</button>
+    <section id="login">
+      <h2>Login</h2>
+      <input id="usernameInput" placeholder="Enter your username" />
+      <button onclick="saveUsername()">Save</button>
     </section>
 
-    <!-- Menu Section -->
-    <section id="menu">
-      <h2>Main Menu</h2>
-      <button onclick="navigate('games')">Play Games</button>
-      <button onclick="navigate('leaderboard')">Leaderboard</button>
-      <button onclick="navigate('settings')">Settings</button>
+    <section id="menu" class="hidden">
+      <h2>Welcome, <span id="currentUser">Anonymous</span>!</h2>
+      <button onclick="navigate('games')">Start Game</button>
     </section>
 
-    <!-- Game Selection -->
-    <section id="games">
-      <h2>Game Library</h2>
-      <div>
-        <button onclick="openGame('memory')">Memory Match</button>
-        <button onclick="openGame('math')">Math Rush</button>
-        <button onclick="openGame('tap')">Tap Fast</button>
-        <button onclick="openGame('click')">Click the Box</button>
-        <button onclick="openGame('guess')">Guess Number</button>
-      </div>
-      <div class="game-container" id="gameArea"></div>
-      <button onclick="navigate('menu')">Back</button>
+    <section id="games" class="hidden">
+      <h2>Game 1: Tap the Tiles</h2>
+      <button onclick="startGame()">Start Game</button>
+      <div id="gameArea" class="game-grid"></div>
     </section>
 
-    <!-- Leaderboard -->
-    <section id="leaderboard">
+    <section id="leaderboard" class="hidden">
       <h2>Leaderboard</h2>
       <ul id="leaderboardList"></ul>
-      <button onclick="navigate('menu')">Back</button>
     </section>
 
-    <!-- Settings -->
-    <section id="settings">
+    <section id="settings" class="hidden">
       <h2>Settings</h2>
       <button onclick="toggleTheme()">Toggle Theme</button>
       <button onclick="toggleSound()">Toggle Sound</button>
-      <button onclick="navigate('menu')">Back</button>
     </section>
   </main>
 
   <footer>
-    <p>&copy; 2025 BitBloop. All rights reserved.</p>
+    <p>© 2025 BitBloop. All rights reserved.</p>
   </footer>
 
   <script>
     let userLevel = 1;
     let userPoints = 0;
-    let soundOn = true;
+    let soundEnabled = true;
 
-    function login() {
-      const username = document.getElementById('usernameInput').value.trim();
-      if (!username) {
-        alert('Please enter a username!');
-        return;
-      }
-      localStorage.setItem('bitbloop_username', username);
-      navigate('menu');
-      loadStats();
+    function navigate(section) {
+      document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
+      document.getElementById(section).classList.remove('hidden');
     }
 
-    function navigate(page) {
-      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-      document.getElementById(page).classList.add('active');
-      document.getElementById('gameArea').innerHTML = '';
+    function saveUsername() {
+      const name = document.getElementById('usernameInput').value || 'Anonymous';
+      localStorage.setItem('bitbloop_username', name);
+      document.getElementById('currentUser').textContent = name;
+      navigate('menu');
+    }
+
+    function loadUsername() {
+      const name = localStorage.getItem('bitbloop_username') || 'Anonymous';
+      document.getElementById('currentUser').textContent = name;
     }
 
     function toggleTheme() {
-      document.body.classList.toggle('dark-mode');
-      localStorage.setItem('bitbloop_theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+      const dark = document.body.style.getPropertyValue('--bg') !== '#111';
+      document.body.style.setProperty('--bg', dark ? '#111' : '#f0f0f0');
+      document.body.style.setProperty('--text', dark ? '#fff' : '#333');
+      document.body.style.setProperty('--header-bg', dark ? '#000' : '#222');
+      localStorage.setItem('bitbloop_theme', dark ? 'dark' : 'light');
+    }
+
+    function loadTheme() {
+      const theme = localStorage.getItem('bitbloop_theme');
+      if (theme === 'dark') toggleTheme();
     }
 
     function toggleSound() {
-      soundOn = !soundOn;
-      localStorage.setItem('bitbloop_sound', soundOn ? 'on' : 'off');
-      alert("Sound: " + (soundOn ? "ON" : "OFF"));
+      soundEnabled = !soundEnabled;
+      localStorage.setItem('bitbloop_sound', soundEnabled);
+      alert(`Sound ${soundEnabled ? 'On' : 'Off'}`);
     }
 
-    function playSound() {
-      if (soundOn) {
-        const audio = new Audio('https://www.soundjay.com/buttons/sounds/button-3.mp3');
-        audio.play();
+    function loadSound() {
+      const saved = localStorage.getItem('bitbloop_sound');
+      soundEnabled = saved === 'true';
+    }
+
+    function startGame() {
+      const area = document.getElementById('gameArea');
+      area.innerHTML = '';
+      for (let i = 0; i < 12; i++) {
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+        tile.textContent = i + 1;
+        tile.onclick = () => {
+          tile.style.background = '#4caf50';
+          completeGame();
+        };
+        area.appendChild(tile);
       }
     }
 
@@ -170,6 +161,7 @@
       userPoints += pointsEarned;
       userLevel += 1;
       saveStats();
+      renderLeaderboard();
       alert(`Game Complete! Level: ${userLevel}, Points: ${userPoints}`);
       navigate('games');
     }
@@ -194,107 +186,11 @@
       list.innerHTML = `<li>${username} - Level ${userLevel}, Points ${userPoints}</li>`;
     }
 
-    function loadTheme() {
-      const theme = localStorage.getItem('bitbloop_theme');
-      if (theme === 'dark') {
-        document.body.classList.add('dark-mode');
-      }
-    }
-
-    function loadSound() {
-      soundOn = localStorage.getItem('bitbloop_sound') !== 'off';
-    }
-
-    function loadUsername() {
-      const stored = localStorage.getItem('bitbloop_username');
-      if (stored) {
-        document.getElementById('usernameInput').value = stored;
-      }
-    }
-
-    function openGame(game) {
-      const area = document.getElementById('gameArea');
-      playSound();
-      if (game === 'memory') {
-        area.innerHTML = '<p>Match all pairs!</p>';
-        const cards = ['A', 'A', 'B', 'B', 'C', 'C'].sort(() => 0.5 - Math.random());
-        let selected = [], matched = [];
-        cards.forEach((val, i) => {
-          const div = document.createElement('div');
-          div.className = 'card';
-          div.dataset.value = val;
-          div.dataset.index = i;
-          div.onclick = function() {
-            if (selected.length < 2 && !div.classList.contains('matched')) {
-              div.textContent = val;
-              selected.push(div);
-              if (selected.length === 2) {
-                setTimeout(() => {
-                  if (selected[0].dataset.value === selected[1].dataset.value) {
-                    selected.forEach(el => {
-                      el.classList.add('matched');
-                      matched.push(el);
-                    });
-                    if (matched.length === cards.length) completeGame(15);
-                  } else {
-                    selected.forEach(el => el.textContent = '');
-                  }
-                  selected = [];
-                }, 500);
-              }
-            }
-          };
-          area.appendChild(div);
-        });
-      } else if (game === 'math') {
-        const a = Math.floor(Math.random() * 20), b = Math.floor(Math.random() * 20);
-        area.innerHTML = `<p>${a} + ${b} = ?</p>
-          <input id="answer" type="number">
-          <button onclick="checkMath(${a + b})">Submit</button>`;
-      } else if (game === 'tap') {
-        let count = 0;
-        area.innerHTML = `<p>Tap as fast as you can in 5 seconds!</p>
-          <p id="tapCount">0</p>
-          <button onclick="tap()">TAP</button>`;
-        setTimeout(() => {
-          completeGame(count);
-        }, 5000);
-        window.tap = () => {
-          count++;
-          document.getElementById('tapCount').textContent = count;
-        };
-      } else if (game === 'click') {
-        area.innerHTML = `<p>Click the box when it turns green</p>
-          <div id="box" style="width:100px;height:100px;background:red;margin:auto;"></div>`;
-        const box = document.getElementById('box');
-        setTimeout(() => {
-          box.style.background = 'green';
-          box.onclick = () => completeGame(12);
-        }, Math.random() * 3000 + 1000);
-      } else if (game === 'guess') {
-        const target = Math.floor(Math.random() * 10) + 1;
-        area.innerHTML = `<p>Guess a number between 1-10</p>
-          <input id="guessInput" type="number"><button onclick="checkGuess(${target})">Guess</button>`;
-      }
-    }
-
-    function checkMath(answer) {
-      const user = parseInt(document.getElementById('answer').value);
-      if (user === answer) completeGame(10);
-      else alert("Wrong!");
-    }
-
-    function checkGuess(target) {
-      const guess = parseInt(document.getElementById('guessInput').value);
-      if (guess === target) completeGame(11);
-      else alert("Try Again!");
-    }
-
     window.addEventListener('load', () => {
       loadUsername();
-      loadStats();
       loadTheme();
       loadSound();
+      loadStats();
       renderLeaderboard();
     });
   </script>
